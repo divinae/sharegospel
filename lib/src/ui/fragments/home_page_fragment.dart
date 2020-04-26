@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sharegospel/src/resources/consts.dart';
+import 'package:sharegospel/src/ui/fragments/count_widget.dart';
 
 class HomePageFragment extends StatelessWidget {
   final Function _changeFragment;
@@ -7,8 +9,6 @@ class HomePageFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4.0),
-    );
+    return CountWidget(SHARES_DB);
   }
 }
