@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../resources/consts.dart';
@@ -55,16 +56,46 @@ class _CountWidgetState extends State<CountWidget> {
               return Center(child: Text(NO_INTERNET));
             }
 
+            var count = 0;
+
+            for (var item in snapshot.data.documents) {
+              count += item.data[COUNT_KEY] as int;
+            }
+
             return Center(
-              child: Text(
-                '1',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    count.toString(),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  MaterialButton(
+                    child: Text("Add"),
+                    onPressed: () {
+                      add(count);
+                    },
+                  )
+                ],
               ),
             );
           }),
     );
+  }
+
+  add(int count) {
+    log('kuba: add');
+    Firestore.instance
+        .collection(widget.name)
+        .document("Flwv2iQijs7aQR1eclvP")
+        .updateData({COUNT_KEY: ++count}).then((result) {
+      log('kuba: added');
+    }).catchError((onError) {
+      log(
+        'kuba: error ${onError.toString()}',
+      );
+    });
   }
 
   _refreshStream() async {
