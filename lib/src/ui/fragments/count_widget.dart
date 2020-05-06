@@ -6,8 +6,10 @@ import 'package:connectivity/connectivity.dart';
 
 class CountWidget extends StatefulWidget {
   final String name;
+  final Future<String> uuid;
+  final Future<String> city;
 
-  const CountWidget(this.name);
+  const CountWidget(this.name, this.uuid, this.city);
 
   @override
   _CountWidgetState createState() => _CountWidgetState();
@@ -16,10 +18,16 @@ class CountWidget extends StatefulWidget {
 class _CountWidgetState extends State<CountWidget> {
   var stream;
   var subscription;
+  var uuid;
   ConnectivityResult connectionResult;
 
   @override
   void initState() {
+    widget.uuid.then((String value) {
+      uuid = value;
+      log("kuba: get uuid in");
+    });
+
     stream = Firestore.instance.collection(widget.name).snapshots();
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
     subscription = Connectivity()
@@ -57,9 +65,20 @@ class _CountWidgetState extends State<CountWidget> {
             }
 
             var count = 0;
+            var deviceCount = 0;
+            var found = false;
 
             for (var item in snapshot.data.documents) {
               count += item.data[COUNT_KEY] as int;
+              if (item.documentID == uuid) {
+                found = true;
+                deviceCount = item.data[COUNT_KEY] as int;
+                log("kuba: found document");
+              }
+            }
+
+            if (!found) {
+              createDocument();
             }
 
             return Center(
@@ -71,10 +90,16 @@ class _CountWidgetState extends State<CountWidget> {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  Text(
+                    deviceCount.toString(),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   MaterialButton(
                     child: Text("Add"),
                     onPressed: () {
-                      add(count);
+                      add(deviceCount);
                     },
                   )
                 ],
@@ -84,12 +109,31 @@ class _CountWidgetState extends State<CountWidget> {
     );
   }
 
-  add(int count) {
-    log('kuba: add');
+  add(int value) {
+    log('kuba: add $value $uuid');
     Firestore.instance
         .collection(widget.name)
-        .document("Flwv2iQijs7aQR1eclvP")
-        .updateData({COUNT_KEY: ++count}).then((result) {
+        .document(uuid)
+        .updateData({COUNT_KEY: ++value}).then((result) {
+      log('kuba: added');
+    }).catchError((onError) {
+      log(
+        'kuba: error ${onError.toString()}',
+      );
+    });
+  }
+
+  createDocument() {
+    log('kuba: create $uuid');
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[COUNT_KEY] = 0;
+    data[CITY_KEY] = "Warszawa";
+
+    Firestore.instance
+        .collection(widget.name)
+        .document(uuid)
+        .setData(data)
+        .then((result) {
       log('kuba: added');
     }).catchError((onError) {
       log(
