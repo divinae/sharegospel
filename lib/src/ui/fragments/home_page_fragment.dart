@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/ui/fragments/count_widget.dart';
 
+import '../CustomDialog.dart';
+
 class HomePageFragment extends StatelessWidget {
   final Function _changeFragment;
 
@@ -35,43 +37,9 @@ class HomePageFragment extends StatelessWidget {
     String city = (prefs.getString(CITY_KEY) ?? null);
     if (city == null) {
       log("kuba: get city");
-//      showDialog(
-//          context: context,
-//          builder: (BuildContext context) {
-//            return Dialog(
-//              shape: RoundedRectangleBorder(
-//                  borderRadius:
-//                  BorderRadius.circular(20.0)), //this right here
-//              child: Container(
-//                height: 200,
-//                child: Padding(
-//                  padding: const EdgeInsets.all(12.0),
-//                  child: Column(
-//                    mainAxisAlignment: MainAxisAlignment.center,
-//                    crossAxisAlignment: CrossAxisAlignment.start,
-//                    children: [
-//                      TextField(
-//                        decoration: InputDecoration(
-//                            border: InputBorder.none,
-//                            hintText: 'What do you want to remember?'),
-//                      ),
-//                      SizedBox(
-//                        width: 320.0,
-//                        child: RaisedButton(
-//                          onPressed: () {},
-//                          child: Text(
-//                            "Save",
-//                            style: TextStyle(color: Colors.white),
-//                          ),
-//                          color: const Color(0xFF1BC0C5),
-//                        ),
-//                      )
-//                    ],
-//                  ),
-//                ),
-//              ),
-//            );
-//          });
+      var customDialog = CustomDialog();
+
+      customDialog.city(context);
     }
 
     log("kuba: uiid $city");

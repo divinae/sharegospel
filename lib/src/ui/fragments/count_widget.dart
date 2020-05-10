@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../resources/consts.dart';
@@ -83,6 +84,7 @@ class _CountWidgetState extends State<CountWidget> {
 
             return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Text(
                     count.toString(),
