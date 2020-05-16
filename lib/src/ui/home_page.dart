@@ -13,8 +13,8 @@ class DrawerItem {
 
 class HomePage extends StatefulWidget {
   final drawerItems = [
-    DrawerItem(HOME_PAGE, Icons.home),
-    DrawerItem(ABOUT, Icons.info),
+    DrawerItem(HOME_PAGE_TEXT, Icons.home),
+    DrawerItem(ABOUT_TEXT, Icons.info),
   ];
 
   @override
@@ -70,7 +70,7 @@ class HomePageState extends State<HomePage> {
                 child: Container(
                   child: Center(
                       child: Text(
-                    TITLE,
+                    TITLE_TEXT,
                     style: TextStyle(fontSize: 18),
                   )),
                 ),

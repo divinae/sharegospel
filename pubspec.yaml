@@ -28,6 +28,7 @@ dependencies:
   flutter_launcher_icons: ^0.7.4
   uuid: 2.0.4
   shared_preferences: ^0.5.7
+  carousel_slider: ^2.1.0
 
 dev_dependencies:
   flutter_test:
