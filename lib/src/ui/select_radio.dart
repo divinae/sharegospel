@@ -1,33 +1,37 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 class ShowSelectRadio extends StatefulWidget {
-  final List<GroupModel> group;
+  final List<GroupModel> data;
 
-  const ShowSelectRadio(this.group);
+  const ShowSelectRadio(this.data);
 
   @override
   _ShowSelectRadioState createState() => _ShowSelectRadioState();
 }
 
 class _ShowSelectRadioState extends State<ShowSelectRadio> {
-  int _currVal = 1;
+  int _currVal = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: widget.group
-          .map((t) => RadioListTile(
-                title: Text("${t.text}"),
-                groupValue: _currVal,
-                value: t.index,
-                onChanged: (val) {
-                  setState(() {
-                    _currVal = val.index;
-                  });
-                },
-              ))
-          .toList(),
-    );
+    return ListView.builder(
+        padding: const EdgeInsets.all(0),
+        itemCount: widget.data == null ? 1 : widget.data.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return RadioListTile(
+            title: Text("${widget.data[index].text}"),
+            groupValue: _currVal,
+            value: widget.data[index].index,
+            onChanged: (index) {
+              log("kuba: select_radio set state");
+              setState(() {
+                _currVal = index;
+              });
+            },
+          );
+        });
   }
 }
 

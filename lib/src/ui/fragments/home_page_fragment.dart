@@ -4,6 +4,8 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/ui/fragments/count_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sharegospel/src/ui/select_radio.dart';
 
 import '../CustomDialog.dart';
 
@@ -36,14 +38,27 @@ class HomePageFragment extends StatelessWidget {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city = (prefs.getString(CITY_KEY) ?? null);
     if (city == null) {
+      List<GroupModel> _group = [];
+      int index = 0;
+
+      await Firestore.instance
+          .collection(CITIES_DB)
+          .getDocuments()
+          .then((QuerySnapshot snapshot) {
+        snapshot.documents.forEach((f) => _group.add(GroupModel(
+              text: f.data[NAME_KEY],
+              index: index++,
+            )));
+      });
+
       log("kuba: get city");
       var customDialog = CustomDialog();
 
-      customDialog.city(context);
+      customDialog.city(context, _group);
+
+      log("kuba: uiid $city");
+
+      return city;
     }
-
-    log("kuba: uiid $city");
-
-    return city;
   }
 }
