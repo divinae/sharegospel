@@ -130,7 +130,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(CHOOSE_CITY_TEXT,
-                              style: Theme.of(context).textTheme.title),
+                              style: Theme.of(context).textTheme.headline6),
                         ),
                         Expanded(
                           child: ListView.builder(

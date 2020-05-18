@@ -231,17 +231,71 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   add(int value) {
-    log('kuba: add $value ${widget.uuid} ${widget.city}');
-    Firestore.instance
-        .collection(widget.name)
-        .document(widget.uuid)
-        .updateData({COUNT_KEY: ++value}).then((result) {
-      log('kuba: added');
-    }).catchError((onError) {
-      log(
-        'kuba: error ${onError.toString()}',
-      );
-    });
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(BEEN_SAVED_TEXT,
+                          style: Theme.of(context).textTheme.headline6),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 100.0,
+                          child: RaisedButton(
+                            onPressed: () {
+                              log('kuba: add $value ${widget.uuid} ${widget.city}');
+                              Firestore.instance
+                                  .collection(widget.name)
+                                  .document(widget.uuid)
+                                  .updateData({COUNT_KEY: ++value}).then(
+                                      (result) {
+                                log('kuba: added');
+                              }).catchError((onError) {
+                                log(
+                                  'kuba: error ${onError.toString()}',
+                                );
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              YES_TEXT,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: const Color(0xFF1BC0C5),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100.0,
+                          child: RaisedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              NO_TEXT,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ));
+        });
   }
 
   createDocument() {
