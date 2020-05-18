@@ -26,5 +26,8 @@ const String UUID_KEY = "uuid";
 const String SHARES_DB = "shares";
 const String CITIES_DB = "cities";
 const String COUNT_KEY = "count";
+const String COUNT_MONTH_KEY = "count_month";
+const String CURRENT_MONTH_KEY = "current_month";
+// TODO dodac count_month_saved i count_saved
 const String NAME_KEY = "name";
 const String CITY_KEY = "city";

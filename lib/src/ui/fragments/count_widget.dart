@@ -90,17 +90,26 @@ class _CountWidgetState extends State<CountWidget> {
             }
 
             var count = 0;
+            var countMonth = 0;
             var deviceCount = 0;
+            var deviceCountMonth = 0;
             var found = false;
 
             for (var item in snapshot.data.documents) {
               if (item.data[CITY_KEY] == widget.city) {
-                //TODO rozdzielenie na ogolnie/miesiac
                 count += item.data[COUNT_KEY] as int;
+                countMonth += item.data[COUNT_MONTH_KEY] as int;
                 if (item.documentID == widget.uuid) {
                   found = true;
                   deviceCount = item.data[COUNT_KEY] as int;
+                  deviceCountMonth = item.data[COUNT_MONTH_KEY] as int;
                   log("kuba: found document");
+
+                  var month = item.data[CURRENT_MONTH_KEY] as int;
+                  if (month != DateTime.now().month) {
+                    // TODO set month to current and reset count month
+                    // TODO jesli zmienil sie miesiac zresetowac
+                  }
                 }
               }
             }
@@ -160,7 +169,7 @@ class _CountWidgetState extends State<CountWidget> {
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
-                            deviceCount.toString(),
+                            deviceCountMonth.toString(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
@@ -200,7 +209,7 @@ class _CountWidgetState extends State<CountWidget> {
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
-                            count.toString(),
+                            countMonth.toString(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
@@ -223,7 +232,7 @@ class _CountWidgetState extends State<CountWidget> {
                       label: Text(ADD_TEXT),
                       icon: Icon(Icons.add),
                       onPressed: () {
-                        add(deviceCount);
+                        add(deviceCount, deviceCountMonth);
                       },
                     ),
                   )
@@ -234,7 +243,7 @@ class _CountWidgetState extends State<CountWidget> {
     );
   }
 
-  add(int value) {
+  add(int count, int countMonth) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -260,12 +269,14 @@ class _CountWidgetState extends State<CountWidget> {
                           width: 100.0,
                           child: RaisedButton(
                             onPressed: () {
-                              log('kuba: add $value ${widget.uuid} ${widget.city}');
+                              log('kuba: add $count ${widget.uuid} ${widget.city}');
                               Firestore.instance
                                   .collection(widget.name)
                                   .document(widget.uuid)
-                                  .updateData({COUNT_KEY: ++value}).then(
-                                      (result) {
+                                  .updateData({
+                                COUNT_KEY: ++count,
+                                COUNT_MONTH_KEY: ++countMonth
+                              }).then((result) {
                                 log('kuba: added');
                               }).catchError((onError) {
                                 log(
@@ -316,8 +327,10 @@ class _CountWidgetState extends State<CountWidget> {
   createDocument() {
     log('kuba: create ${widget.uuid} ${widget.city}');
     Map<String, dynamic> data = new Map<String, dynamic>();
-    data[COUNT_KEY] = 0;
     data[CITY_KEY] = widget.city;
+    data[COUNT_KEY] = 0;
+    data[COUNT_MONTH_KEY] = 0;
+    data[CURRENT_MONTH_KEY] = DateTime.now().month;
 
     Firestore.instance
         .collection(widget.name)
