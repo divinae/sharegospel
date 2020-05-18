@@ -12,7 +12,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Project Faith',
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.lightBlue,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
       ),
       debugShowCheckedModeBanner: false,
       home: HomePage(),

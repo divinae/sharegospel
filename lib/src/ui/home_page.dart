@@ -60,7 +60,10 @@ class HomePageState extends State<HomePage> {
       onWillPop: _onWellPop,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor:
+              MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Colors.black26
+                  : Colors.white,
           title: Text(widget.drawerItems[_selectedDrawerIndex].title),
         ),
         drawer: Drawer(

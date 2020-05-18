@@ -215,7 +215,11 @@ class _CountWidgetState extends State<CountWidget> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
                     child: FloatingActionButton.extended(
-                      foregroundColor: Colors.white,
+                      foregroundColor:
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                       label: Text(ADD_TEXT),
                       icon: Icon(Icons.add),
                       onPressed: () {
@@ -272,7 +276,13 @@ class _CountWidgetState extends State<CountWidget> {
                             },
                             child: Text(
                               YES_TEXT,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color:
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white,
+                              ),
                             ),
                             color: const Color(0xFF1BC0C5),
                           ),
@@ -285,7 +295,12 @@ class _CountWidgetState extends State<CountWidget> {
                             },
                             child: Text(
                               NO_TEXT,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: MediaQuery.of(context)
+                                              .platformBrightness ==
+                                          Brightness.dark
+                                      ? Colors.black
+                                      : Colors.white),
                             ),
                             color: Colors.red,
                           ),

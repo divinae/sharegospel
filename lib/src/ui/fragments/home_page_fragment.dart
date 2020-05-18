@@ -162,7 +162,12 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                             },
                             child: Text(
                               OK_TEXT,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: MediaQuery.of(context)
+                                              .platformBrightness ==
+                                          Brightness.dark
+                                      ? Colors.black
+                                      : Colors.white),
                             ),
                             color: const Color(0xFF1BC0C5),
                           ),
