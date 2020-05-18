@@ -6,12 +6,15 @@ import 'package:flutter/rendering.dart';
 import '../../resources/consts.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-//TODO dodać swoje obrazki o ewangelii
 final List<String> imgList = [
+  'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
+  'https://i0.wp.com/www.ccf.org.ph/wp-content/uploads/2019/04/Be-a-Blessing.jpg?fit=1920%2C1080&ssl=1',
+  'https://content.thriveglobal.com/wp-content/uploads/2020/02/goodnews.jpg',
   'https://images.squarespace-cdn.com/content/v1/5a786461bce176c268dcc0f8/1517912147091-N66MGUYD2L3CGJC0B8HF/ke17ZwdGBToddI8pDm48kPpMuD-lfe4Jlrz6p4sHWIIUqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8N_N4V1vUb5AoIIIbLZhVYxCRW4BPu10St3TBAUQYVKccU5H_NPXqCiUlaoDXtJ3mr7JUedzcQMnICPKvIuCjp4kBfnH4gFqD3JR_xn45zol/020d1_John_3_16_illustration_EN.jpg?format=1500w',
-  'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80'
+  'https://www.john15.rocks/wp-content/uploads/2017/02/bible_good_news-696x464.jpg',
+  'https://i2.wp.com/redeeminggod.com/wp-content/uploads/2016/11/ShareTheGospel_630x315.jpg'
 ];
 
 class CountWidget extends StatefulWidget {
@@ -32,15 +35,17 @@ class _CountWidgetState extends State<CountWidget> {
 
   final List<Widget> imageSliders = imgList
       .map((item) => Container(
-            child: Container(
-              margin: EdgeInsets.all(5.0),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  child: Stack(
-                    children: <Widget>[
-                      Image.network(item, fit: BoxFit.cover, width: 1000.0)
-                    ],
-                  )),
+            margin: EdgeInsets.all(5.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              child: CachedNetworkImage(
+                width: 1000,
+                fit: BoxFit.cover,
+                imageUrl: item,
+                placeholder: (context, url) =>
+                    Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
             ),
           ))
       .toList();
@@ -52,6 +57,7 @@ class _CountWidgetState extends State<CountWidget> {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
+      connectionResult = result;
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
         _refreshStream();
@@ -115,7 +121,7 @@ class _CountWidgetState extends State<CountWidget> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 16.0),
                         child: CarouselSlider(
                           options: CarouselOptions(
-                            aspectRatio: 1.6,
+                            aspectRatio: 1.8,
                             viewportFraction: 1.0,
                             enlargeCenterPage: true,
                             scrollDirection: Axis.horizontal,
@@ -125,48 +131,8 @@ class _CountWidgetState extends State<CountWidget> {
                         ),
                       ),
                       Text(
-                        CITY_COUNT_TEXT,
-                        style: Theme.of(context).textTheme.title,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            CITY_ALL_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            count.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            COUNT_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            CITY_MONTH_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            count.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            COUNT_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Text(
                         YOUR_COUNT_TEXT,
-                        style: Theme.of(context).textTheme.title,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -195,6 +161,46 @@ class _CountWidgetState extends State<CountWidget> {
                           ),
                           Text(
                             deviceCount.toString(),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            PEOPLE_POSTFIX_TEXT,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        CITY_COUNT_TEXT,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            CITY_ALL_COUNT_TEXT,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            count.toString(),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            PEOPLE_POSTFIX_TEXT,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            CITY_MONTH_COUNT_TEXT,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            count.toString(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),

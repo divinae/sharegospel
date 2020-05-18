@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/ui/fragments/count_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 
 class HomePageFragment extends StatefulWidget {
   final Function _changeFragment;
@@ -16,15 +17,37 @@ class HomePageFragment extends StatefulWidget {
 }
 
 class _HomePageFragmentState extends State<HomePageFragment> {
+  ConnectivityResult connectionResult;
+  var subscription;
   String _uuid;
   String _city;
   var isDialogVisible = false;
 
-  //TODO dodać sprawdzenie internetu
+  @override
+  void initState() {
+    Connectivity().checkConnectivity().then((val) => connectionResult = val);
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      connectionResult = result;
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        log("kuba: internet state changed");
+        setState(() {});
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    log("kuba: loadUuid");
+    log("kuba: build");
 
     if (_city == null && !isDialogVisible) {
       loadCity(context);
@@ -37,6 +60,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     if (_uuid != null && _city != null) {
       log("kuba: build Count $_city $_uuid");
       return CountWidget(SHARES_DB, _uuid, _city);
+    } else if (connectionResult == ConnectivityResult.none) {
+      return Center(child: Text(NO_INTERNET_TEXT));
     } else {
       return Center(child: CircularProgressIndicator());
     }
@@ -63,7 +88,9 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city = (prefs.getString(CITY_KEY) ?? null);
 
-    if (city == null) {
+    if (city == null && connectionResult == ConnectivityResult.none) {
+      return;
+    } else if (city == null && connectionResult != ConnectivityResult.none) {
       isDialogVisible = true;
       List<GroupModel> _group = [];
       int index = 0;
