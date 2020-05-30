@@ -66,23 +66,24 @@ class HomePageState extends State<HomePage> {
                   : Colors.white,
           title: Text(widget.drawerItems[_selectedDrawerIndex].title),
         ),
-        drawer: Drawer(
-          child: ListView(
-            children: <Widget>[
-              DrawerHeader(
-                child: Container(
-                  child: Center(
-                      child: Text(
-                    TITLE_TEXT,
-                    style: TextStyle(fontSize: 18),
-                  )),
-                ),
-              ),
-              Column(children: drawerOptions)
-            ],
-          ),
-        ),
-        body: _getDrawerItemWidget(_selectedDrawerIndex),
+        // drawer: Drawer(
+        //   child: ListView(
+        //     children: <Widget>[
+        //       DrawerHeader(
+        //         child: Container(
+        //           child: Center(
+        //               child: Text(
+        //             TITLE_TEXT,
+        //             style: TextStyle(fontSize: 18),
+        //           )),
+        //         ),
+        //       ),
+        //       Column(children: drawerOptions)
+        //     ],
+        //   ),
+        // ),
+        // body: _getDrawerItemWidget(_selectedDrawerIndex),
+        body: HomePageFragment(_changeFragment),
       ),
     );
   }

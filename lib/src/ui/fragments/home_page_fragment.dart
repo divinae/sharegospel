@@ -59,7 +59,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
     if (_uuid != null && _city != null) {
       log("kuba: build Count $_city $_uuid");
-      return CountWidget(SHARES_DB, _uuid, _city);
+      return CountWidget(_uuid, _city);
     } else if (connectionResult == ConnectivityResult.none) {
       return Center(child: Text(NO_INTERNET_TEXT));
     } else {
@@ -95,15 +95,17 @@ class _HomePageFragmentState extends State<HomePageFragment> {
       List<GroupModel> _group = [];
       int index = 0;
 
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection(CITIES_DB)
-          .getDocuments()
+          .get()
           .then((QuerySnapshot snapshot) {
-        var documents = snapshot.documents;
-        documents.sort((a, b) =>
-            a.data[NAME_KEY].toString().compareTo(b.data[NAME_KEY].toString()));
+        var documents = snapshot.docs;
+        documents.sort((a, b) => a
+            .data()[CITY_NAME_KEY]
+            .toString()
+            .compareTo(b.data()[CITY_NAME_KEY].toString()));
         documents.forEach((document) => _group.add(GroupModel(
-              text: document.data[NAME_KEY],
+              text: document.data()[CITY_NAME_KEY],
               index: index++,
             )));
       });
@@ -115,7 +117,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
             int selectedRadio = 0;
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) {
                 return Padding(
@@ -132,6 +134,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                           child: Text(CHOOSE_CITY_TEXT,
                               style: Theme.of(context).textTheme.headline6),
                         ),
+                        Divider(),
                         Expanded(
                           child: ListView.builder(
                             padding: const EdgeInsets.all(0),
@@ -152,24 +155,31 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                             },
                           ),
                         ),
-                        SizedBox(
-                          width: 300.0,
-                          child: RaisedButton(
-                            onPressed: () {
-                              city = _group[selectedRadio].text;
-                              prefs.setString(CITY_KEY, city);
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              OK_TEXT,
-                              style: TextStyle(
-                                  color: MediaQuery.of(context)
-                                              .platformBrightness ==
-                                          Brightness.dark
-                                      ? Colors.black
-                                      : Colors.white),
+                        Divider(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 300,
+                            height: 40,
+                            child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                city = _group[selectedRadio].text;
+                                prefs.setString(CITY_KEY, city);
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                OK_TEXT,
+                                style: TextStyle(
+                                    color: MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white),
+                              ),
+                              color: Theme.of(context).accentColor,
                             ),
-                            color: const Color(0xFF1BC0C5),
                           ),
                         )
                       ],

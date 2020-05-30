@@ -1,12 +1,15 @@
 import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../resources/consts.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 final List<String> imgList = [
   'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
@@ -18,11 +21,10 @@ final List<String> imgList = [
 ];
 
 class CountWidget extends StatefulWidget {
-  final String name;
   final String uuid;
   final String city;
 
-  const CountWidget(this.name, this.uuid, this.city);
+  const CountWidget(this.uuid, this.city);
 
   @override
   _CountWidgetState createState() => _CountWidgetState();
@@ -31,20 +33,33 @@ class CountWidget extends StatefulWidget {
 class _CountWidgetState extends State<CountWidget> {
   var stream;
   var subscription;
+  var documentUuid;
+
   ConnectivityResult connectionResult;
+
+  var sharesCount = 0;
+  var savedCount = 0;
+
+  var deviceSharesCount = 0;
+  var deviceSavedCount = 0;
 
   final List<Widget> imageSliders = imgList
       .map((item) => Container(
-            margin: EdgeInsets.all(5.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              child: CachedNetworkImage(
-                width: 1000,
-                fit: BoxFit.cover,
-                imageUrl: item,
-                placeholder: (context, url) =>
-                    Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+            margin: EdgeInsets.all(0.0),
+            child: Card(
+              elevation: 2.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                child: CachedNetworkImage(
+                  width: 1000,
+                  fit: BoxFit.cover,
+                  imageUrl: item,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
             ),
           ))
@@ -52,7 +67,10 @@ class _CountWidgetState extends State<CountWidget> {
 
   @override
   void initState() {
-    stream = Firestore.instance.collection(widget.name).snapshots();
+    stream = FirebaseFirestore.instance
+        .collection(SHARES_DB)
+        .where(CITY_KEY, isEqualTo: widget.city)
+        .snapshots();
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
     subscription = Connectivity()
         .onConnectivityChanged
@@ -84,39 +102,12 @@ class _CountWidgetState extends State<CountWidget> {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (snapshot.data.documents.length == 0 &&
+            if (snapshot.data.docs.length == 0 &&
                 connectionResult == ConnectivityResult.none) {
               return Center(child: Text(NO_INTERNET_TEXT));
             }
 
-            var count = 0;
-            var countMonth = 0;
-            var deviceCount = 0;
-            var deviceCountMonth = 0;
-            var found = false;
-
-            for (var item in snapshot.data.documents) {
-              if (item.data[CITY_KEY] == widget.city) {
-                count += item.data[COUNT_KEY] as int;
-                countMonth += item.data[COUNT_MONTH_KEY] as int;
-                if (item.documentID == widget.uuid) {
-                  found = true;
-                  deviceCount = item.data[COUNT_KEY] as int;
-                  deviceCountMonth = item.data[COUNT_MONTH_KEY] as int;
-                  log("kuba: found document");
-
-                  var month = item.data[CURRENT_MONTH_KEY] as int;
-                  if (month != DateTime.now().month) {
-                    // TODO set month to current and reset count month
-                    // TODO jesli zmienil sie miesiac zresetowac
-                  }
-                }
-              }
-            }
-
-            if (!found) {
-              createDocument();
-            }
+            _getData(snapshot.data.docs);
 
             return Padding(
               padding: const EdgeInsets.all(8.0),
@@ -126,103 +117,121 @@ class _CountWidgetState extends State<CountWidget> {
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 16.0),
-                        child: CarouselSlider(
-                          options: CarouselOptions(
-                            aspectRatio: 1.8,
-                            viewportFraction: 1.0,
-                            enlargeCenterPage: true,
-                            scrollDirection: Axis.horizontal,
-                            autoPlay: true,
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          aspectRatio: 1.8,
+                          viewportFraction: 1.0,
+                          enlargeCenterPage: true,
+                          scrollDirection: Axis.horizontal,
+                          autoPlay: true,
+                        ),
+                        items: imageSliders,
+                      ),
+                      Card(
+                        elevation: 2.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        child: Container(
+                          height: 140,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    YOUR_COUNT_TEXT,
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Column(
+                                        children: [
+                                          Text(
+                                              "$GOSPEL_HEARD_TEXT ${deviceSharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1),
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.all(2.0)),
+                                          Text(
+                                              "$INVITE_JESUS_TEXT ${deviceSavedCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1),
+                                        ],
+                                      ),
+                                      FadeInImage(
+                                        placeholder:
+                                            MemoryImage(kTransparentImage),
+                                        image: AssetImage(PERSON_ASSET_PATH),
+                                        height: 80,
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          items: imageSliders,
                         ),
                       ),
-                      Text(
-                        YOUR_COUNT_TEXT,
-                        style: Theme.of(context).textTheme.headline6,
+                      Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        elevation: 2.0,
+                        child: Container(
+                          height: 140,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  CITY_COUNT_TEXT,
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Column(
+                                      children: [
+                                        Text(
+                                            "$GOSPEL_HEARD_TEXT ${sharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1),
+                                        Padding(
+                                            padding: const EdgeInsets.all(2.0)),
+                                        Text(
+                                            "$INVITE_JESUS_TEXT ${savedCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1),
+                                      ],
+                                    ),
+                                    FadeInImage(
+                                      placeholder:
+                                          MemoryImage(kTransparentImage),
+                                      image: AssetImage(CITY_ASSET_PATH),
+                                      height: 80,
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            YOUR_ALL_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            deviceCount.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            PEOPLE_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            YOUR_MONTH_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            deviceCountMonth.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            PEOPLE_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        CITY_COUNT_TEXT,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            CITY_ALL_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            count.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            PEOPLE_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            CITY_MONTH_COUNT_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            countMonth.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            PEOPLE_POSTFIX_TEXT,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 48),
                     child: FloatingActionButton.extended(
                       foregroundColor:
                           MediaQuery.of(context).platformBrightness ==
@@ -231,9 +240,7 @@ class _CountWidgetState extends State<CountWidget> {
                               : Colors.white,
                       label: Text(ADD_TEXT),
                       icon: Icon(Icons.add),
-                      onPressed: () {
-                        add(deviceCount, deviceCountMonth);
-                      },
+                      onPressed: () => {_showAddDialog()},
                     ),
                   )
                 ],
@@ -243,13 +250,32 @@ class _CountWidgetState extends State<CountWidget> {
     );
   }
 
-  add(int count, int countMonth) {
+  _getData(Iterable<DocumentSnapshot> documents) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      deviceSharesCount = (prefs.getInt(DEVICE_SHARES_COUNT_KEY) ?? 0);
+      deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
+    });
+
+    if (documents.length > 0) {
+      var item = documents.first;
+      documentUuid = item.id;
+      setState(() {
+        sharesCount = item.data()[SHARES_COUNT_KEY] as int;
+        savedCount = item.data()[SAVED_COUNT_KEY] as int;
+      });
+    } else {
+      _createDoc();
+    }
+  }
+
+  _showAddDialog() {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -259,83 +285,109 @@ class _CountWidgetState extends State<CountWidget> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(BEEN_SAVED_TEXT,
+                      child: Text(ADD_TEXT,
                           style: Theme.of(context).textTheme.headline6),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 100.0,
-                          child: RaisedButton(
-                            onPressed: () {
-                              log('kuba: add $count ${widget.uuid} ${widget.city}');
-                              Firestore.instance
-                                  .collection(widget.name)
-                                  .document(widget.uuid)
-                                  .updateData({
-                                COUNT_KEY: ++count,
-                                COUNT_MONTH_KEY: ++countMonth
-                              }).then((result) {
-                                log('kuba: added');
-                              }).catchError((onError) {
-                                log(
-                                  'kuba: error ${onError.toString()}',
-                                );
-                              });
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              YES_TEXT,
-                              style: TextStyle(
-                                color:
-                                    MediaQuery.of(context).platformBrightness ==
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(BEEN_SAVED_TEXT,
+                          style: Theme.of(context).textTheme.subtitle1),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 40,
+                            width: 110.0,
+                            child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                _addShare(false);
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                NO_TEXT,
+                                style: TextStyle(
+                                    color: MediaQuery.of(context)
+                                                .platformBrightness ==
                                             Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white,
+                                        ? Colors.white
+                                        : Colors.black54),
                               ),
+                              color: Theme.of(context).dividerColor,
                             ),
-                            color: const Color(0xFF1BC0C5),
                           ),
-                        ),
-                        SizedBox(
-                          width: 100.0,
-                          child: RaisedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              NO_TEXT,
-                              style: TextStyle(
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                          ),
+                          SizedBox(
+                            height: 40,
+                            width: 110.0,
+                            child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                _addShare(true);
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                YES_TEXT,
+                                style: TextStyle(
                                   color: MediaQuery.of(context)
                                               .platformBrightness ==
                                           Brightness.dark
                                       ? Colors.black
-                                      : Colors.white),
+                                      : Colors.white,
+                                ),
+                              ),
+                              color: Theme.of(context).accentColor,
                             ),
-                            color: Colors.red,
                           ),
-                        ),
-                      ],
-                    )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ));
         });
   }
 
-  createDocument() {
-    log('kuba: create ${widget.uuid} ${widget.city}');
+  _addShare(bool saved) async {
+    log("kuba: _addShare ${saved}");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, ++deviceSharesCount);
+    if (saved) {
+      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, ++deviceSavedCount);
+    }
+
+    FirebaseFirestore.instance.collection(SHARES_DB).doc(documentUuid).update({
+      SHARES_COUNT_KEY: ++sharesCount,
+      SAVED_COUNT_KEY: saved ? ++savedCount : savedCount
+    }).then((result) {
+      log('kuba: added');
+    }).catchError((onError) {
+      log(
+        'kuba: error ${onError.toString()}',
+      );
+    });
+  }
+
+  _createDoc() {
+    log('kuba: _createDoc ${widget.city}');
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[CITY_KEY] = widget.city;
-    data[COUNT_KEY] = 0;
-    data[COUNT_MONTH_KEY] = 0;
-    data[CURRENT_MONTH_KEY] = DateTime.now().month;
+    data[SHARES_COUNT_KEY] = 0;
+    data[SAVED_COUNT_KEY] = 0;
 
-    Firestore.instance
-        .collection(widget.name)
-        .document(widget.uuid)
-        .setData(data)
+    FirebaseFirestore.instance
+        .collection(SHARES_DB)
+        .doc()
+        .set(data)
         .then((result) {
       log('kuba: added');
     }).catchError((onError) {
@@ -347,7 +399,10 @@ class _CountWidgetState extends State<CountWidget> {
 
   _refreshStream() async {
     setState(() {
-      stream = Firestore.instance.collection(widget.name).snapshots();
+      stream = FirebaseFirestore.instance
+          .collection(SHARES_DB)
+          .where(CITY_KEY, isEqualTo: widget.city)
+          .snapshots();
     });
   }
 }
