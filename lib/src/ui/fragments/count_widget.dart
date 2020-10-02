@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,26 +44,25 @@ class _CountWidgetState extends State<CountWidget> {
   var deviceSavedCount = 0;
 
   final List<Widget> imageSliders = imgList
-      .map((item) =>
-      Container(
-        margin: EdgeInsets.all(0.0),
-        child: Card(
-          elevation: 2.0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            child: CachedNetworkImage(
-              width: 1000,
-              fit: BoxFit.cover,
-              imageUrl: item,
-              placeholder: (context, url) =>
-                  Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+      .map((item) => Container(
+            margin: EdgeInsets.all(0.0),
+            child: Card(
+              elevation: 2.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                child: CachedNetworkImage(
+                  width: 1000,
+                  fit: BoxFit.cover,
+                  imageUrl: item,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+              ),
             ),
-          ),
-        ),
-      ))
+          ))
       .toList();
 
   @override
@@ -105,8 +102,7 @@ class _CountWidgetState extends State<CountWidget> {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (snapshot.data.docs.length == 0 ||
-                connectionResult == ConnectivityResult.none) {
+            if (connectionResult == ConnectivityResult.none) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -118,10 +114,7 @@ class _CountWidgetState extends State<CountWidget> {
                     ),
                     Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
                     Text(NO_INTERNET_TEXT,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .subtitle1)
+                        style: Theme.of(context).textTheme.subtitle1)
                   ],
                 ),
               );
@@ -129,158 +122,161 @@ class _CountWidgetState extends State<CountWidget> {
 
             _getData(snapshot.data.docs);
 
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          aspectRatio: 1.8,
-                          viewportFraction: 1.0,
-                          enlargeCenterPage: true,
-                          scrollDirection: Axis.horizontal,
-                          autoPlay: true,
-                        ),
-                        items: imageSliders,
-                      ),
-                      Card(
-                        elevation: 2.0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        child: Container(
-                          height: 140,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(
-                                    YOUR_COUNT_TEXT,
-                                    style:
-                                    Theme
-                                        .of(context)
-                                        .textTheme
-                                        .headline6,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Column(
-                                        children: [
-                                          Text(
-                                              "$GOSPEL_HEARD_TEXT ${deviceSharesCount
-                                                  .toString()} $PEOPLE_POSTFIX_TEXT",
-                                              style: Theme
-                                                  .of(context)
-                                                  .textTheme
-                                                  .subtitle1),
-                                          Padding(
-                                              padding:
-                                              const EdgeInsets.all(2.0)),
-                                          Text(
-                                              "$INVITE_JESUS_TEXT ${deviceSavedCount
-                                                  .toString()} $PEOPLE_POSTFIX_TEXT",
-                                              style: Theme
-                                                  .of(context)
-                                                  .textTheme
-                                                  .subtitle1),
-                                        ],
-                                      ),
-                                      FadeInImage(
-                                        placeholder:
-                                        MemoryImage(kTransparentImage),
-                                        image: AssetImage(PERSON_ASSET_PATH),
-                                        height: 80,
-                                      )
-                                    ],
-                                  ),
-                                ],
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[
+                            CarouselSlider(
+                              options: CarouselOptions(
+                                aspectRatio: 1.8,
+                                viewportFraction: 1.0,
+                                enlargeCenterPage: true,
+                                scrollDirection: Axis.horizontal,
+                                autoPlay: true,
                               ),
+                              items: imageSliders,
                             ),
-                          ),
-                        ),
-                      ),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        elevation: 2.0,
-                        child: Container(
-                          height: 140,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text(
-                                  CITY_COUNT_TEXT,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .headline6,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Column(
+                            Card(
+                              elevation: 2.0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              child: Container(
+                                height: 140,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
                                         Text(
-                                            "$GOSPEL_HEARD_TEXT ${sharesCount
-                                                .toString()} $PEOPLE_POSTFIX_TEXT",
-                                            style: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .subtitle1),
-                                        Padding(
-                                            padding: const EdgeInsets.all(2.0)),
-                                        Text(
-                                            "$INVITE_JESUS_TEXT ${savedCount
-                                                .toString()} $PEOPLE_POSTFIX_TEXT",
-                                            style: Theme
-                                                .of(context)
-                                                .textTheme
-                                                .subtitle1),
+                                          YOUR_COUNT_TEXT,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Column(
+                                              children: [
+                                                Text(
+                                                    "$GOSPEL_HEARD_TEXT ${deviceSharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle1),
+                                                Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            2.0)),
+                                                Text(
+                                                    "$INVITE_JESUS_TEXT ${deviceSavedCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle1),
+                                              ],
+                                            ),
+                                            FadeInImage(
+                                              placeholder: MemoryImage(
+                                                  kTransparentImage),
+                                              image:
+                                                  AssetImage(PERSON_ASSET_PATH),
+                                              height: 80,
+                                            )
+                                          ],
+                                        ),
                                       ],
                                     ),
-                                    FadeInImage(
-                                      placeholder:
-                                      MemoryImage(kTransparentImage),
-                                      image: AssetImage(CITY_ASSET_PATH),
-                                      height: 80,
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              elevation: 2.0,
+                              child: Container(
+                                height: 140,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        CITY_COUNT_TEXT,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Column(
+                                            children: [
+                                              Text(
+                                                  "$GOSPEL_HEARD_TEXT ${sharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1),
+                                              Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      2.0)),
+                                              Text(
+                                                  "$INVITE_JESUS_TEXT ${savedCount.toString()} $PEOPLE_POSTFIX_TEXT",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1),
+                                            ],
+                                          ),
+                                          FadeInImage(
+                                            placeholder:
+                                                MemoryImage(kTransparentImage),
+                                            image: AssetImage(CITY_ASSET_PATH),
+                                            height: 80,
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 50),
+                            )
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 48),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
                     child: FloatingActionButton.extended(
                       foregroundColor:
-                      MediaQuery
-                          .of(context)
-                          .platformBrightness ==
-                          Brightness.dark
-                          ? Colors.black
-                          : Colors.white,
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                       label: Text(ADD_TEXT),
                       icon: Icon(Icons.add),
                       onPressed: () => {_showAddDialog()},
                     ),
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             );
           }),
     );
@@ -322,18 +318,12 @@ class _CountWidgetState extends State<CountWidget> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(ADD_TEXT,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .headline6),
+                          style: Theme.of(context).textTheme.headline6),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(BEEN_SAVED_TEXT,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1),
+                          style: Theme.of(context).textTheme.subtitle1),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -353,21 +343,18 @@ class _CountWidgetState extends State<CountWidget> {
                               child: Text(
                                 NO_TEXT,
                                 style: TextStyle(
-                                    color: MediaQuery
-                                        .of(context)
-                                        .platformBrightness ==
-                                        Brightness.dark
+                                    color: MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
                                         ? Colors.white
                                         : Colors.black54),
                               ),
-                              color: Theme
-                                  .of(context)
-                                  .dividerColor,
+                              color: Theme.of(context).dividerColor,
                             ),
                           ),
                           Padding(
                             padding:
-                            const EdgeInsets.symmetric(horizontal: 8.0),
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                           ),
                           SizedBox(
                             height: 40,
@@ -382,17 +369,14 @@ class _CountWidgetState extends State<CountWidget> {
                               child: Text(
                                 YES_TEXT,
                                 style: TextStyle(
-                                  color: MediaQuery
-                                      .of(context)
-                                      .platformBrightness ==
-                                      Brightness.dark
+                                  color: MediaQuery.of(context)
+                                              .platformBrightness ==
+                                          Brightness.dark
                                       ? Colors.black
                                       : Colors.white,
                                 ),
                               ),
-                              color: Theme
-                                  .of(context)
-                                  .accentColor,
+                              color: Theme.of(context).accentColor,
                             ),
                           ),
                         ],
