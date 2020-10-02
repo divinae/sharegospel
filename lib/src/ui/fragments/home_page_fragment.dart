@@ -6,6 +6,8 @@ import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/ui/fragments/count_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:transparent_image/transparent_image.dart';
+import 'package:logger/logger.dart';
 
 class HomePageFragment extends StatefulWidget {
   final Function _changeFragment;
@@ -23,6 +25,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
   String _city;
   var isDialogVisible = false;
 
+  var logger = Logger();
+
   @override
   void initState() {
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
@@ -32,7 +36,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
       connectionResult = result;
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
-        log("kuba: internet state changed");
+        logger.d("internet state changed");
         setState(() {});
       }
     });
@@ -47,7 +51,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
   @override
   Widget build(BuildContext context) {
-    log("kuba: build");
+    logger.d("build");
 
     if (_city == null && !isDialogVisible) {
       loadCity(context);
@@ -58,33 +62,46 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     }
 
     if (_uuid != null && _city != null) {
-      log("kuba: build Count $_city $_uuid");
+      logger.d("build Count $_city $_uuid");
       return CountWidget(_uuid, _city);
     } else if (connectionResult == ConnectivityResult.none) {
-      return Center(child: Text(NO_INTERNET_TEXT));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FadeInImage(
+              placeholder: MemoryImage(kTransparentImage),
+              image: AssetImage(NO_INTERNET_ASSET_PATH),
+              height: 150,
+            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
+            Text(NO_INTERNET_TEXT, style: Theme.of(context).textTheme.subtitle1)
+          ],
+        ),
+      );
     } else {
       return Center(child: CircularProgressIndicator());
     }
   }
 
   loadUuid() async {
-    log("kuba: loadUuid");
+    logger.d("loadUuid");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String uuid = (prefs.getString(UUID_KEY) ?? null);
     if (uuid == null) {
-      log("kuba: set uuid");
+      logger.d("set uuid");
       uuid = Uuid().v1();
       await prefs.setString(UUID_KEY, uuid);
     }
 
-    log("kuba: uiid $uuid");
+    logger.d("uiid $uuid");
     setState(() {
       _uuid = uuid;
     });
   }
 
   loadCity(var context) async {
-    log("kuba: loadCity");
+    logger.d("loadCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city = (prefs.getString(CITY_KEY) ?? null);
 
@@ -146,7 +163,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                 groupValue: selectedRadio,
                                 value: _group[index].index,
                                 onChanged: (index) {
-                                  log("kuba: select_radio set state");
+                                  logger.d("select_radio set state");
                                   setState(() {
                                     selectedRadio = index;
                                   });
@@ -191,7 +208,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
           });
     }
 
-    log("kuba: city $city");
+    logger.d("city $city");
     setState(() {
       _city = city;
       isDialogVisible = false;

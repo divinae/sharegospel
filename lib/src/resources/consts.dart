@@ -4,7 +4,7 @@ const String ABOUT_TEXT = "O nas";
 
 const String OK_TEXT = "OK";
 
-const String NO_INTERNET_TEXT = "Brak połączenia z internetem :(";
+const String NO_INTERNET_TEXT = "Brak połączenia z internetem.";
 const String CHOOSE_CITY_TEXT = "Wybierz swoje miasto:";
 const String BEEN_SAVED_TEXT = "Czy ta osoba ogłosiła Jezusa swoim Panem?";
 const String YES_TEXT = "Tak";
@@ -35,3 +35,4 @@ const String CITY_NAME_KEY = "name";
 
 const String CITY_ASSET_PATH = "assets/city.png";
 const String PERSON_ASSET_PATH = "assets/person.png";
+const String NO_INTERNET_ASSET_PATH = "assets/no_internet.png";
