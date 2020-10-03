@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sharegospel/src/ui/fragments/shares_card.dart';
 import '../../resources/consts.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -143,114 +144,16 @@ class _CountWidgetState extends State<CountWidget> {
                               ),
                               items: imageSliders,
                             ),
-                            Card(
-                              elevation: 2.0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              child: Container(
-                                height: 140,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Text(
-                                          YOUR_COUNT_TEXT,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Column(
-                                              children: [
-                                                Text(
-                                                    "$GOSPEL_HEARD_TEXT ${deviceSharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1),
-                                                Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            2.0)),
-                                                Text(
-                                                    "$INVITE_JESUS_TEXT ${deviceSavedCount.toString()} $PEOPLE_POSTFIX_TEXT",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1),
-                                              ],
-                                            ),
-                                            FadeInImage(
-                                              placeholder: MemoryImage(
-                                                  kTransparentImage),
-                                              image:
-                                                  AssetImage(PERSON_ASSET_PATH),
-                                              height: 80,
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              elevation: 2.0,
-                              child: Container(
-                                height: 140,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        CITY_COUNT_TEXT,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Column(
-                                            children: [
-                                              Text(
-                                                  "$GOSPEL_HEARD_TEXT ${sharesCount.toString()} $PEOPLE_POSTFIX_TEXT",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1),
-                                              Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      2.0)),
-                                              Text(
-                                                  "$INVITE_JESUS_TEXT ${savedCount.toString()} $PEOPLE_POSTFIX_TEXT",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle1),
-                                            ],
-                                          ),
-                                          FadeInImage(
-                                            placeholder:
-                                                MemoryImage(kTransparentImage),
-                                            image: AssetImage(CITY_ASSET_PATH),
-                                            height: 80,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            SharesCard(
+                                title: YOUR_COUNT_TEXT,
+                                imagePath: PERSON_ASSET_PATH,
+                                sharesCount: deviceSharesCount,
+                                savedCount: deviceSavedCount),
+                            SharesCard(
+                                title: CITY_COUNT_TEXT,
+                                imagePath: CITY_ASSET_PATH,
+                                sharesCount: sharesCount,
+                                savedCount: savedCount),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 50),
                             )
