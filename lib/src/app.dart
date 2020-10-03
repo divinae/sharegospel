@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return MaterialApp(
-      title: 'Project Faith',
+      title: 'ShareGospel',
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.lightBlue,
