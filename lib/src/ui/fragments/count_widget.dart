@@ -389,19 +389,19 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   _addShare(bool saved) async {
-    logger.d("_addShare ${saved}");
+    logger.d("_addShare $saved");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, ++deviceSharesCount);
+    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, deviceSharesCount + 1);
     if (saved) {
-      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, ++deviceSavedCount);
+      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, deviceSavedCount + 1);
     }
 
     FirebaseFirestore.instance.collection(SHARES_DB).doc(documentUuid).update({
-      SHARES_COUNT_KEY: ++sharesCount,
-      SAVED_COUNT_KEY: saved ? ++savedCount : savedCount
+      SHARES_COUNT_KEY: sharesCount + 1,
+      SAVED_COUNT_KEY: saved ? savedCount + 1 : savedCount
     }).then((result) {
-      logger.d(' added');
+      logger.d('added');
     }).catchError((onError) {
       logger.e('error ${onError.toString()}');
     });
