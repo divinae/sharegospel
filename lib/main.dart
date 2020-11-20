@@ -5,13 +5,40 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+   WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
 
   // Pass all uncaught errors from the framework to Crashlytics.
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  // FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
-  runZoned(() {
-    runApp(MyApp());
-  }, onError: Crashlytics.instance.recordError);
+  // runZoned(() {
+    runApp(App());
+  // }, onError: Crashlytics.instance.recordError);
+}
+
+class App extends StatelessWidget {
+  // Create the initilization Future outside of `build`:
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return Center(child: Text("error"),);
+        }
+
+        // // Once complete, show your application
+        // if (snapshot.connectionState == ConnectionState.done) {
+        //   return Center(child: Text("App"),);
+        // }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Center(child: Text("Loading"),);
+      },
+    );
+  }
 }
