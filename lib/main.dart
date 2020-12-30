@@ -9,9 +9,12 @@ void main() async {
   await Firebase.initializeApp();
 
   // Pass all uncaught errors from the framework to Crashlytics.
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
-  runZoned(() {
+  runZonedGuarded(() {
     runApp(MyApp());
-  }, onError: Crashlytics.instance.recordError);
+  }, (error, stackTrace) {
+    print('runZonedGuarded: Caught error in my root zone.');
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }

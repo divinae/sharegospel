@@ -28,6 +28,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
   @override
   void initState() {
+    logger.d("initState");
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
     subscription = Connectivity()
         .onConnectivityChanged
