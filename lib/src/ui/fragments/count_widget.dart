@@ -193,20 +193,19 @@ class _CountWidgetState extends State<CountWidget> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
                           SizedBox(
                             height: 40,
-                            width: 110.0,
+                            width: 100.0,
                             child: FlatButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
                               onPressed: () {
-                                _addShare(false);
                                 Navigator.pop(context);
                               },
                               child: Text(
-                                NO_TEXT,
+                                CANCEL_TEXT,
                                 style: TextStyle(
                                     color: MediaQuery.of(context)
                                                 .platformBrightness ==
@@ -217,32 +216,61 @@ class _CountWidgetState extends State<CountWidget> {
                               color: Theme.of(context).dividerColor,
                             ),
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                          SizedBox(
-                            height: 40,
-                            width: 110.0,
-                            child: FlatButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              onPressed: () {
-                                _addShare(true);
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                YES_TEXT,
-                                style: TextStyle(
-                                  color: MediaQuery.of(context)
-                                              .platformBrightness ==
-                                          Brightness.dark
-                                      ? Colors.black
-                                      : Colors.white,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                width: 60.0,
+                                child: FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  onPressed: () {
+                                    _addShare(false);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    NO_TEXT,
+                                    style: TextStyle(
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black54),
+                                  ),
+                                  color: Theme.of(context).dividerColor,
                                 ),
                               ),
-                              color: Theme.of(context).accentColor,
-                            ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                              ),
+                              SizedBox(
+                                height: 40,
+                                width: 60.0,
+                                child: FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  onPressed: () {
+                                    _addShare(true);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    YES_TEXT,
+                                    style: TextStyle(
+                                      color: MediaQuery.of(context)
+                                                  .platformBrightness ==
+                                              Brightness.dark
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                  color: Theme.of(context).accentColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

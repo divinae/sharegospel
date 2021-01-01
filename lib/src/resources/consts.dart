@@ -9,6 +9,7 @@ const String CHOOSE_CITY_TEXT = "Wybierz swoje miasto:";
 const String BEEN_SAVED_TEXT = "Czy ta osoba ogłosiła Jezusa swoim Panem?";
 const String YES_TEXT = "Tak";
 const String NO_TEXT = "Nie";
+const String CANCEL_TEXT = "Anuluj";
 
 const String CITY_COUNT_TEXT = "W twoim mieście";
 const String YOUR_COUNT_TEXT = "Dzięki tobie";
