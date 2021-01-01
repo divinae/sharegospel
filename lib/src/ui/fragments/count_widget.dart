@@ -6,10 +6,8 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharegospel/src/ui/fragments/shares_card.dart';
 import '../../resources/consts.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 final List<String> imgList = [
   'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
@@ -35,8 +33,6 @@ class _CountWidgetState extends State<CountWidget> {
   var subscription;
   var documentUuid;
   var logger = Logger();
-
-  ConnectivityResult connectionResult;
 
   var sharesCount = 0;
   var savedCount = 0;
@@ -72,23 +68,7 @@ class _CountWidgetState extends State<CountWidget> {
         .collection(SHARES_DB)
         .where(CITY_KEY, isEqualTo: widget.city)
         .snapshots();
-    Connectivity().checkConnectivity().then((val) => connectionResult = val);
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      connectionResult = result;
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        _refreshStream();
-      }
-    });
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
   }
 
   @override
@@ -101,24 +81,6 @@ class _CountWidgetState extends State<CountWidget> {
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
-            }
-
-            if (connectionResult == ConnectivityResult.none) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FadeInImage(
-                      placeholder: MemoryImage(kTransparentImage),
-                      image: AssetImage(NO_INTERNET_ASSET_PATH),
-                      height: 150,
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
-                    Text(NO_INTERNET_TEXT,
-                        style: Theme.of(context).textTheme.subtitle1)
-                  ],
-                ),
-              );
             }
 
             _getData(snapshot.data.docs);

@@ -33,12 +33,10 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      connectionResult = result;
-      if (result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi) {
-        logger.d("internet state changed");
-        setState(() {});
-      }
+      logger.d("internet state changed state=" + result.toString());
+      setState(() {
+        connectionResult = result;
+      });
     });
     super.initState();
   }
@@ -57,14 +55,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
       loadCity(context);
     }
 
-    if (_uuid == null) {
-      loadUuid();
-    }
-
-    if (_uuid != null && _city != null) {
-      logger.d("build Count $_city $_uuid");
-      return CountWidget(_uuid, _city);
-    } else if (connectionResult == ConnectivityResult.none) {
+    if (connectionResult == ConnectivityResult.none) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,6 +70,19 @@ class _HomePageFragmentState extends State<HomePageFragment> {
           ],
         ),
       );
+    }
+
+    if (_city == null && !isDialogVisible) {
+      loadCity(context);
+    }
+
+    if (_uuid == null) {
+      loadUuid();
+    }
+
+    if (_uuid != null && _city != null) {
+      logger.d("build Count $_city $_uuid");
+      return CountWidget(_uuid, _city);
     } else {
       return Center(child: CircularProgressIndicator());
     }
