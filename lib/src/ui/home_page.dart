@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../my_icons_icons.dart';
+import 'fragments/gospel_widget.dart';
 import 'fragments/home_page_fragment.dart';
-import 'fragments/about_fragment.dart';
 import '../resources/consts.dart';
 
 class DrawerItem {
@@ -12,9 +13,15 @@ class DrawerItem {
 }
 
 class HomePage extends StatefulWidget {
-  final drawerItems = [
-    DrawerItem(HOME_PAGE_TEXT, Icons.home),
-    DrawerItem(ABOUT_TEXT, Icons.info),
+  final navigationItems = [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: HOME_PAGE_TEXT,
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(MyIcons.cross),
+      label: GOSPEL_PAGE_TEXT,
+    )
   ];
 
   @override
@@ -24,37 +31,26 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedDrawerIndex = 0;
+  int _selectedIndex = 0;
 
-  _getDrawerItemWidget(int pos) {
+  _getItemWidget(int pos) {
     switch (pos) {
       case 0:
         return HomePageFragment(_changeFragment);
       case 1:
-        return AboutFragment();
-
+        return GospelWidget();
       default:
         return Text("Error");
     }
   }
 
   _onSelectItem(int index) {
-    setState(() => _selectedDrawerIndex = index);
-    Navigator.of(context).pop(); // close the drawer
+    setState(() => _selectedIndex = index);
   }
 
   @override
   Widget build(BuildContext context) {
-    var drawerOptions = <Widget>[];
-    for (var i = 0; i < widget.drawerItems.length; i++) {
-      var d = widget.drawerItems[i];
-      drawerOptions.add(ListTile(
-        leading: Icon(d.icon),
-        title: Text(d.title),
-        selected: i == _selectedDrawerIndex,
-        onTap: () => _onSelectItem(i),
-      ));
-    }
+    var screenWidth = MediaQuery.of(context).size.width;
 
     return WillPopScope(
       onWillPop: _onWellPop,
@@ -64,36 +60,30 @@ class HomePageState extends State<HomePage> {
               MediaQuery.of(context).platformBrightness == Brightness.dark
                   ? Colors.black26
                   : Colors.white,
-          title: Text(widget.drawerItems[_selectedDrawerIndex].title),
+          title: Text(widget.navigationItems[_selectedIndex].label),
         ),
-        // drawer: Drawer(
-        //   child: ListView(
-        //     children: <Widget>[
-        //       DrawerHeader(
-        //         child: Container(
-        //           child: Center(
-        //               child: Text(
-        //             TITLE_TEXT,
-        //             style: TextStyle(fontSize: 18),
-        //           )),
-        //         ),
-        //       ),
-        //       Column(children: drawerOptions)
-        //     ],
-        //   ),
-        // ),
-        // body: _getDrawerItemWidget(_selectedDrawerIndex),
-        body: HomePageFragment(_changeFragment),
+        bottomNavigationBar: BottomNavigationBar(
+          items: widget.navigationItems,
+          currentIndex: _selectedIndex,
+          onTap: _onSelectItem,
+        ),
+        body: Center(
+          child: Container(
+            width:
+                screenWidth > MAX_SCREEN_WIDTH ? MAX_SCREEN_WIDTH : screenWidth,
+            child: _getItemWidget(_selectedIndex),
+          ),
+        ),
       ),
     );
   }
 
   Future<bool> _onWellPop() {
-    if (_selectedDrawerIndex == 0) {
+    if (_selectedIndex == 0) {
       SystemNavigator.pop();
     } else {
       setState(() {
-        _selectedDrawerIndex = 0;
+        _selectedIndex = 0;
       });
     }
 
@@ -102,7 +92,7 @@ class HomePageState extends State<HomePage> {
 
   void _changeFragment(int index) {
     setState(() {
-      _selectedDrawerIndex = index;
+      _selectedIndex = index;
     });
   }
 }

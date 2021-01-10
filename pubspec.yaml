@@ -32,6 +32,7 @@ dependencies:
   carousel_slider: ^2.3.1
   cached_network_image: ^2.5.0
   firebase_crashlytics: ^0.2.4
+  ext_video_player: ^0.0.4
   transparent_image: ^1.0.0
   logger: ^0.9.4
 
@@ -69,6 +70,10 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
+  fonts:
+    - family: MyIcons
+      fonts:
+        - asset: fonts/MyIcons.ttf
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

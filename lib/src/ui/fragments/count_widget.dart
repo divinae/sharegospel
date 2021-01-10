@@ -64,11 +64,11 @@ class _CountWidgetState extends State<CountWidget> {
 
   @override
   void initState() {
+    super.initState();
     stream = FirebaseFirestore.instance
         .collection(SHARES_DB)
         .where(CITY_KEY, isEqualTo: widget.city)
         .snapshots();
-    super.initState();
   }
 
   @override

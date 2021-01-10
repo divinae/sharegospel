@@ -1,5 +1,8 @@
+const int MAX_SCREEN_WIDTH = 500;
+
 const String TITLE_TEXT = "Share Gospel";
 const String HOME_PAGE_TEXT = "Strona główna";
+const String GOSPEL_PAGE_TEXT = "Ewangelia";
 const String ABOUT_TEXT = "O nas";
 
 const String OK_TEXT = "OK";
@@ -37,3 +40,7 @@ const String CITY_NAME_KEY = "name";
 const String CITY_ASSET_PATH = "assets/city.png";
 const String PERSON_ASSET_PATH = "assets/person.png";
 const String NO_INTERNET_ASSET_PATH = "assets/no_internet.png";
+
+const String GOSPEL_YOUTUBE_TITLE = "Jak dzielić się ewangelią?";
+const String GOSPEL_YOUTUBE_LINK =
+    "https://www.youtube.com/watch?v=DakbXbI-hY0";
