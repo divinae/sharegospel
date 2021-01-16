@@ -9,9 +9,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:logger/logger.dart';
 
 class HomePageFragment extends StatefulWidget {
-  final Function _changeFragment;
-
-  HomePageFragment(this._changeFragment);
+  HomePageFragment();
 
   @override
   _HomePageFragmentState createState() => _HomePageFragmentState();
@@ -22,7 +20,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
   var subscription;
   String _uuid;
   String _city;
-  var isDialogVisible = false;
+  var _isDialogVisible = false;
 
   var logger = Logger();
 
@@ -68,23 +66,23 @@ class _HomePageFragmentState extends State<HomePageFragment> {
       );
     }
 
-    if (_city == null && !isDialogVisible) {
-      loadCity(context);
+    if (_city == null && !_isDialogVisible) {
+      _loadCity(context);
     }
 
     if (_uuid == null) {
-      loadUuid();
+      _loadUuid();
     }
 
     if (_uuid != null && _city != null) {
       logger.d("build Count $_city $_uuid");
-      return CountWidget(_uuid, _city, changeCity);
+      return CountWidget(_uuid, _city, _changeCity);
     } else {
       return Center(child: CircularProgressIndicator());
     }
   }
 
-  loadUuid() async {
+  _loadUuid() async {
     logger.d("loadUuid");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String uuid = (prefs.getString(UUID_KEY) ?? null);
@@ -100,7 +98,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     });
   }
 
-  loadCity(var context) async {
+  _loadCity(var context) async {
     logger.d("loadCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city = (prefs.getString(CITY_KEY) ?? null);
@@ -108,7 +106,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     if (city == null && connectionResult == ConnectivityResult.none) {
       return;
     } else if (city == null && connectionResult != ConnectivityResult.none) {
-      isDialogVisible = true;
+      _isDialogVisible = true;
       List<GroupModel> _group = [];
       int index = 0;
 
@@ -211,11 +209,11 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     logger.d("city $city");
     setState(() {
       _city = city;
-      isDialogVisible = false;
+      _isDialogVisible = false;
     });
   }
 
-  changeCity(var context) async {
+  _changeCity(var context) async {
     logger.d("changeCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city;
@@ -223,7 +221,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     if (connectionResult == ConnectivityResult.none) {
       return;
     } else {
-      isDialogVisible = true;
+      _isDialogVisible = true;
       List<GroupModel> _group = [];
       int index = 0;
 
@@ -246,7 +244,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            int selectedRadio = 0;
+            int selectedRadio;
             return Dialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
@@ -290,28 +288,60 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                         Divider(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 300,
-                            height: 40,
-                            child: FlatButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              onPressed: () {
-                                city = _group[selectedRadio].text;
-                                prefs.setString(CITY_KEY, city);
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                OK_TEXT,
-                                style: TextStyle(
-                                    color: MediaQuery.of(context)
-                                                .platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                width: 120,
+                                child: FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    CANCEL_TEXT,
+                                    style: TextStyle(
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black54),
+                                  ),
+                                  color: Theme.of(context).dividerColor,
+                                ),
                               ),
-                              color: Theme.of(context).accentColor,
-                            ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                              ),
+                              SizedBox(
+                                width: 120,
+                                height: 40,
+                                child: FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  onPressed: () {
+                                    city = _group[selectedRadio].text;
+                                    prefs.setString(CITY_KEY, city);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    OK_TEXT,
+                                    style: TextStyle(
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.black
+                                            : Colors.white),
+                                  ),
+                                  color: Theme.of(context).accentColor,
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       ],
@@ -326,7 +356,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     logger.d("city $city");
     setState(() {
       _city = city;
-      isDialogVisible = false;
+      _isDialogVisible = false;
     });
   }
 }

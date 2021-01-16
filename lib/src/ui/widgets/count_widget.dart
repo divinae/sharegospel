@@ -75,6 +75,7 @@ class _CountWidgetState extends State<CountWidget> {
     super.didUpdateWidget(oldWidget);
     logger.d("old city=${oldWidget.city} new city= ${widget.city}");
     if (oldWidget.city != widget.city) {
+      logger.d("update stream");
       setState(() {
         stream = FirebaseFirestore.instance
             .collection(SHARES_DB)

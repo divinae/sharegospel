@@ -33,15 +33,13 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
+  final List<Widget> _fragments = [
+    HomePageFragment(),
+    GospelFragment(),
+  ];
+
   _getItemWidget(int pos) {
-    switch (pos) {
-      case 0:
-        return HomePageFragment(_changeFragment);
-      case 1:
-        return GospelFragment();
-      default:
-        return Text("Error");
-    }
+    return _fragments[pos];
   }
 
   _onSelectItem(int index) {
@@ -88,11 +86,5 @@ class HomePageState extends State<HomePage> {
     }
 
     return new Future(() => false);
-  }
-
-  void _changeFragment(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 }
