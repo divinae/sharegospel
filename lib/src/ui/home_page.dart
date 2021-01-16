@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../my_icons_icons.dart';
-import 'fragments/gospel_widget.dart';
+import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
 
@@ -38,7 +38,7 @@ class HomePageState extends State<HomePage> {
       case 0:
         return HomePageFragment(_changeFragment);
       case 1:
-        return GospelWidget();
+        return GospelFragment();
       default:
         return Text("Error");
     }

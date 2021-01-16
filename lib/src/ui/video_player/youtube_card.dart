@@ -2,7 +2,8 @@ import 'package:ext_video_player/ext_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sharegospel/src/ui/fragments/video_player/PlayPauseOverlay.dart';
+
+import 'PlayPauseOverlay.dart';
 
 class YoutubeCard extends StatelessWidget {
   const YoutubeCard({

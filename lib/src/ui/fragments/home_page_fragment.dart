@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
-import 'package:sharegospel/src/ui/fragments/count_widget.dart';
+import 'package:sharegospel/src/ui/widgets/count_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -50,10 +50,6 @@ class _HomePageFragmentState extends State<HomePageFragment> {
   @override
   Widget build(BuildContext context) {
     logger.d("build");
-
-    if (_city == null && !isDialogVisible) {
-      loadCity(context);
-    }
 
     if (connectionResult == ConnectivityResult.none) {
       return Center(
