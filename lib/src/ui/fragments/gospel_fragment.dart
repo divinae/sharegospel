@@ -64,7 +64,7 @@ class _GospelFragmentState extends State<GospelFragment> {
                       " grzechem. W innym miejscu biblia mówi, że zapłatą za"
                       " grzech jest śmierć (Rzym 6:23). W ten sposób wstępujemy"
                       " na drogą której końcem jest wieczne potępienie.",
-                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  style: Theme.of(context).textTheme.subtitle1,
                   children: <TextSpan>[
                     TextSpan(
                         text:
@@ -97,10 +97,11 @@ class _GospelFragmentState extends State<GospelFragment> {
               Divider(
                 color: Colors.transparent,
               ),
-              FadeInImage(
-                placeholder: MemoryImage(kTransparentImage),
-                image: AssetImage("assets/ewangelia.png"),
-                height: 200,
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                child: FadeInImage(
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: AssetImage("assets/ewangelia.png")),
               ),
             ],
           )

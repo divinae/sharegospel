@@ -299,6 +299,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                       borderRadius:
                                           BorderRadius.circular(20.0)),
                                   onPressed: () {
+                                    city = null;
                                     Navigator.pop(context);
                                   },
                                   child: Text(
@@ -353,11 +354,13 @@ class _HomePageFragmentState extends State<HomePageFragment> {
           });
     }
 
-    logger.d("city $city");
-    setState(() {
-      _city = city;
-      _isDialogVisible = false;
-    });
+    if (city != null) {
+      logger.d("city $city");
+      setState(() {
+        _city = city;
+        _isDialogVisible = false;
+      });
+    }
   }
 }
 

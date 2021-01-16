@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../my_icons_icons.dart';
 import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
@@ -19,7 +18,7 @@ class HomePage extends StatefulWidget {
       label: HOME_PAGE_TEXT,
     ),
     BottomNavigationBarItem(
-      icon: Icon(MyIcons.cross),
+      icon: Icon(Icons.mood),
       label: GOSPEL_PAGE_TEXT,
     )
   ];
@@ -63,6 +62,10 @@ class HomePageState extends State<HomePage> {
         bottomNavigationBar: BottomNavigationBar(
           items: widget.navigationItems,
           currentIndex: _selectedIndex,
+          backgroundColor:
+              MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Colors.black26
+                  : Colors.white,
           onTap: _onSelectItem,
         ),
         body: Center(
