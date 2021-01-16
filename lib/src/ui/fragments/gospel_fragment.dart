@@ -38,7 +38,7 @@ class _GospelFragmentState extends State<GospelFragment> {
   Widget build(BuildContext context) {
     return _controller.value.initialized
         ? ListView(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(8.0),
             children: <Widget>[
               Column(
                 children: <Widget>[

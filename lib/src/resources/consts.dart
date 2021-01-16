@@ -14,6 +14,7 @@ const String YES_TEXT = "Tak";
 const String NO_TEXT = "Nie";
 const String CANCEL_TEXT = "Anuluj";
 
+const String CITY_TEXT = "Twoje miasto:";
 const String CITY_COUNT_TEXT = "W twoim mieście";
 const String YOUR_COUNT_TEXT = "Dzięki tobie";
 const String PEOPLE_POSTFIX_TEXT = "osób";

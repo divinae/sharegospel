@@ -5,15 +5,13 @@ import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
+import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 final List<String> imgList = [
   'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
-  'https://i0.wp.com/www.ccf.org.ph/wp-content/uploads/2019/04/Be-a-Blessing.jpg?fit=1920%2C1080&ssl=1',
-  'https://content.thriveglobal.com/wp-content/uploads/2020/02/goodnews.jpg',
-  'https://images.squarespace-cdn.com/content/v1/5a786461bce176c268dcc0f8/1517912147091-N66MGUYD2L3CGJC0B8HF/ke17ZwdGBToddI8pDm48kPpMuD-lfe4Jlrz6p4sHWIIUqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8N_N4V1vUb5AoIIIbLZhVYxCRW4BPu10St3TBAUQYVKccU5H_NPXqCiUlaoDXtJ3mr7JUedzcQMnICPKvIuCjp4kBfnH4gFqD3JR_xn45zol/020d1_John_3_16_illustration_EN.jpg?format=1500w',
   'https://www.john15.rocks/wp-content/uploads/2017/02/bible_good_news-696x464.jpg',
   'https://i2.wp.com/redeeminggod.com/wp-content/uploads/2016/11/ShareTheGospel_630x315.jpg'
 ];
@@ -21,8 +19,9 @@ final List<String> imgList = [
 class CountWidget extends StatefulWidget {
   final String uuid;
   final String city;
+  final Function changeCity;
 
-  const CountWidget(this.uuid, this.city);
+  const CountWidget(this.uuid, this.city, this.changeCity);
 
   @override
   _CountWidgetState createState() => _CountWidgetState();
@@ -72,6 +71,20 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   @override
+  void didUpdateWidget(CountWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    logger.d("old city=${oldWidget.city} new city= ${widget.city}");
+    if (oldWidget.city != widget.city) {
+      setState(() {
+        stream = FirebaseFirestore.instance
+            .collection(SHARES_DB)
+            .where(CITY_KEY, isEqualTo: widget.city)
+            .snapshots();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () => _refreshStream(),
@@ -111,11 +124,14 @@ class _CountWidgetState extends State<CountWidget> {
                                 imagePath: PERSON_ASSET_PATH,
                                 sharesCount: deviceSharesCount,
                                 savedCount: deviceSavedCount),
-                            SharesCard(
-                                title: CITY_COUNT_TEXT,
-                                imagePath: CITY_ASSET_PATH,
-                                sharesCount: sharesCount,
-                                savedCount: savedCount),
+                            SharesCityCard(
+                              title: CITY_COUNT_TEXT,
+                              imagePath: CITY_ASSET_PATH,
+                              sharesCount: sharesCount,
+                              cityName: widget.city,
+                              savedCount: savedCount,
+                              changeCity: widget.changeCity,
+                            ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 50),
                             )
