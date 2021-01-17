@@ -9,6 +9,7 @@ const String OK_TEXT = "OK";
 
 const String NO_INTERNET_TEXT = "Brak połączenia z internetem.";
 const String CHOOSE_CITY_TEXT = "Wybierz swoje miasto:";
+const String ADD_NEW_CITY_TEXT = "Dodaj nowe miasto";
 const String BEEN_SAVED_TEXT = "Czy ta osoba ogłosiła Jezusa swoim Panem?";
 const String YES_TEXT = "Tak";
 const String NO_TEXT = "Nie";

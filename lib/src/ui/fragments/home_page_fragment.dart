@@ -102,6 +102,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     logger.d("loadCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city = (prefs.getString(CITY_KEY) ?? null);
+    ScrollController scrollController = ScrollController();
 
     if (city == null && connectionResult == ConnectivityResult.none) {
       return;
@@ -123,6 +124,11 @@ class _HomePageFragmentState extends State<HomePageFragment> {
               text: document.data()[CITY_NAME_KEY],
               index: index++,
             )));
+
+        _group.add(GroupModel(
+          text: ADD_NEW_CITY_TEXT,
+          index: index++,
+        ));
       });
 
       await showDialog(
@@ -151,23 +157,29 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                         ),
                         Divider(),
                         Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(0),
-                            itemCount: _group == null ? 1 : _group.length,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return RadioListTile(
-                                title: Text("${_group[index].text}"),
-                                groupValue: selectedRadio,
-                                value: _group[index].index,
-                                onChanged: (index) {
-                                  logger.d("select_radio set state");
-                                  setState(() {
-                                    selectedRadio = index;
-                                  });
-                                },
-                              );
-                            },
+                          child: Scrollbar(
+                            radius: Radius.circular(20),
+                            controller: scrollController,
+                            isAlwaysShown: true,
+                            child: ListView.builder(
+                              controller: scrollController,
+                              padding: const EdgeInsets.all(0),
+                              itemCount: _group == null ? 1 : _group.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return RadioListTile(
+                                  title: Text("${_group[index].text}"),
+                                  groupValue: selectedRadio,
+                                  value: _group[index].index,
+                                  onChanged: (index) {
+                                    logger.d("select_radio set state");
+                                    setState(() {
+                                      selectedRadio = index;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                         Divider(),
@@ -180,9 +192,15 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0)),
                               onPressed: () {
-                                city = _group[selectedRadio].text;
-                                prefs.setString(CITY_KEY, city);
-                                Navigator.pop(context);
+                                if (_group[selectedRadio].text ==
+                                    ADD_NEW_CITY_TEXT) {
+                                  Navigator.pop(context);
+                                  _addNewCity(context);
+                                } else {
+                                  city = _group[selectedRadio].text;
+                                  prefs.setString(CITY_KEY, city);
+                                  Navigator.pop(context);
+                                }
                               },
                               child: Text(
                                 OK_TEXT,
@@ -217,6 +235,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     logger.d("changeCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String city;
+    ScrollController scrollController = ScrollController();
 
     if (connectionResult == ConnectivityResult.none) {
       return;
@@ -239,6 +258,11 @@ class _HomePageFragmentState extends State<HomePageFragment> {
               index: index++,
             )));
       });
+
+      _group.add(GroupModel(
+        text: ADD_NEW_CITY_TEXT,
+        index: index++,
+      ));
 
       await showDialog(
           context: context,
@@ -266,23 +290,29 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                         ),
                         Divider(),
                         Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(0),
-                            itemCount: _group == null ? 1 : _group.length,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return RadioListTile(
-                                title: Text("${_group[index].text}"),
-                                groupValue: selectedRadio,
-                                value: _group[index].index,
-                                onChanged: (index) {
-                                  logger.d("select_radio set state");
-                                  setState(() {
-                                    selectedRadio = index;
-                                  });
-                                },
-                              );
-                            },
+                          child: Scrollbar(
+                            radius: Radius.circular(20),
+                            controller: scrollController,
+                            isAlwaysShown: true,
+                            child: ListView.builder(
+                              controller: scrollController,
+                              padding: const EdgeInsets.all(0),
+                              itemCount: _group == null ? 1 : _group.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return RadioListTile(
+                                  title: Text("${_group[index].text}"),
+                                  groupValue: selectedRadio,
+                                  value: _group[index].index,
+                                  onChanged: (index) {
+                                    logger.d("select_radio set state");
+                                    setState(() {
+                                      selectedRadio = index;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                         Divider(),
@@ -326,9 +356,15 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                       borderRadius:
                                           BorderRadius.circular(20.0)),
                                   onPressed: () {
-                                    city = _group[selectedRadio].text;
-                                    prefs.setString(CITY_KEY, city);
-                                    Navigator.pop(context);
+                                    if (_group[selectedRadio].text ==
+                                        ADD_NEW_CITY_TEXT) {
+                                      Navigator.pop(context);
+                                      _addNewCity(context);
+                                    } else {
+                                      city = _group[selectedRadio].text;
+                                      prefs.setString(CITY_KEY, city);
+                                      Navigator.pop(context);
+                                    }
                                   },
                                   child: Text(
                                     OK_TEXT,
@@ -360,6 +396,136 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         _city = city;
         _isDialogVisible = false;
       });
+    }
+  }
+
+  _addNewCity(var context) async {
+    logger.d("addNewCity");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String city;
+
+    if (connectionResult == ConnectivityResult.none) {
+      return;
+    } else {
+      _isDialogVisible = true;
+
+      await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            final controller = TextEditingController();
+
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              child: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(ADD_NEW_CITY_TEXT,
+                            style: Theme.of(context).textTheme.headline6),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: controller,
+                          autofocus: true,
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              height: 40,
+                              width: 120,
+                              child: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                onPressed: () {
+                                  city = null;
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  CANCEL_TEXT,
+                                  style: TextStyle(
+                                      color: MediaQuery.of(context)
+                                                  .platformBrightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black54),
+                                ),
+                                color: Theme.of(context).dividerColor,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            SizedBox(
+                              width: 120,
+                              height: 40,
+                              child: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                onPressed: () {
+                                  city = controller.value.text.trim();
+                                  prefs.setString(CITY_KEY, city);
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  OK_TEXT,
+                                  style: TextStyle(
+                                      color: MediaQuery.of(context)
+                                                  .platformBrightness ==
+                                              Brightness.dark
+                                          ? Colors.black
+                                          : Colors.white),
+                                ),
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }),
+            );
+          });
+
+      if (city != null) {
+        logger.d("city $city");
+
+        Map<String, dynamic> data = new Map<String, dynamic>();
+        data[CITY_NAME_KEY] = city;
+
+        FirebaseFirestore.instance
+            .collection(CITIES_DB)
+            .doc(city)
+            .set(data)
+            .then((result) {
+          logger.d('city added');
+        }).catchError((onError) {
+          logger.e('error ${onError.toString()}');
+        });
+
+        setState(() {
+          _city = city;
+          _isDialogVisible = false;
+        });
+      }
     }
   }
 }
