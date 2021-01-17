@@ -30,26 +30,33 @@ class YoutubeCard extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.headline6,
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: <Widget>[
-                        VideoPlayer(controller),
-                        PlayPauseOverlay(controller: controller),
-                        VideoProgressIndicator(
-                          controller,
-                          allowScrubbing: true,
+              controller.value.initialized
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        child: AspectRatio(
+                          aspectRatio: controller.value.aspectRatio,
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: <Widget>[
+                              VideoPlayer(controller),
+                              PlayPauseOverlay(controller: controller),
+                              VideoProgressIndicator(
+                                controller,
+                                allowScrubbing: true,
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
+                    )
+                  : Container(
+                      height: 190,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
