@@ -118,8 +118,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         var documents = snapshot.docs;
         documents.sort((a, b) => a
             .data()[CITY_NAME_KEY]
-            .toString()
-            .compareTo(b.data()[CITY_NAME_KEY].toString()));
+            .toString().toLowerCase()
+            .compareTo(b.data()[CITY_NAME_KEY].toString().toLowerCase()));
         documents.forEach((document) => _group.add(GroupModel(
               text: document.data()[CITY_NAME_KEY],
               index: index++,
@@ -251,8 +251,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         var documents = snapshot.docs;
         documents.sort((a, b) => a
             .data()[CITY_NAME_KEY]
-            .toString()
-            .compareTo(b.data()[CITY_NAME_KEY].toString()));
+            .toString().toLowerCase()
+            .compareTo(b.data()[CITY_NAME_KEY].toString().toLowerCase()));
         documents.forEach((document) => _group.add(GroupModel(
               text: document.data()[CITY_NAME_KEY],
               index: index++,
