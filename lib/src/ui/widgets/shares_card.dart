@@ -25,22 +25,26 @@ class SharesCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
         height: 140,
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(8.0),
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    width: 230,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("$GOSPEL_HEARD_TEXT ",
                                 style: Theme.of(context).textTheme.subtitle1),
@@ -59,6 +63,7 @@ class SharesCard extends StatelessWidget {
                         ),
                         Padding(padding: const EdgeInsets.all(2.0)),
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("$INVITE_JESUS_TEXT ",
                                 style: Theme.of(context).textTheme.subtitle1),
@@ -73,15 +78,15 @@ class SharesCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    FadeInImage(
-                      placeholder: MemoryImage(kTransparentImage),
-                      image: AssetImage(imagePath),
-                      height: 80,
-                    )
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  FadeInImage(
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: AssetImage(imagePath),
+                    height: 80,
+                  )
+                ],
+              ),
+            ],
           ),
         ),
       ),
