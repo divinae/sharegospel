@@ -74,7 +74,7 @@ class SharesCityCard extends StatelessWidget {
                                       .copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  " $PEOPLE_POSTFIX_TEXT",
+                                  " ${getPeoplePostfix(sharesCount)}",
                                   style: Theme.of(context).textTheme.subtitle1,
                                 ),
                               ],
@@ -90,7 +90,7 @@ class SharesCityCard extends StatelessWidget {
                                         .textTheme
                                         .subtitle1
                                         .copyWith(fontWeight: FontWeight.bold)),
-                                Text(" $PEOPLE_POSTFIX_TEXT",
+                                Text(" ${getPeoplePostfix(savedCount)}",
                                     style:
                                         Theme.of(context).textTheme.subtitle1),
                               ],

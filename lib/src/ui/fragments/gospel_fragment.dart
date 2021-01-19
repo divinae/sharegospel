@@ -59,44 +59,29 @@ class _GospelFragmentState extends State<GospelFragment> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: RichText(
-                  text: TextSpan(
-                    text:
-                        "        Bóg stworzył człowieka, aby mieć z nim wieczną relację."
-                        " Jednak w swoim życiu decydujemy przeciwstawić się mu."
-                        " Odwracamy się od niego, co przez biblię nazwane jest"
-                        " grzechem. W innym miejscu biblia mówi, że zapłatą za"
-                        " grzech jest śmierć (Rzym 6:23). W ten sposób wstępujemy"
-                        " na drogą której końcem jest wieczne potępienie.",
-                    style: Theme.of(context).textTheme.subtitle1,
-                    children: <TextSpan>[
-                      TextSpan(
-                          text:
-                              "\n        Robiąc dobre uczynki czy wykonując religijne"
-                              " obrzędy próbujemy się usprawiedliwiać, lub pomijając"
-                              " Boga szukamy szczęścia w rzeczach materialnych, czy"
-                              " sukcesie. Lecz własnymi siłami nie możemy pokonać"
-                              " przepaści oddzielającej nas od Boga. "),
-                      TextSpan(
-                          text:
-                              "\n        Na szczęście Bóg znalazł rozwiązanie. Zesłał na"
-                              " świat swojego syna Jezusa Chrystusa. On wyzbywając"
-                              " się swojej Boskiej natury stał się człowiekiem. Żył"
-                              " bezgrzesznym życiem i mimo braku winy został zabity"
-                              " na krzyżu. Złożył ofiarę za grzechy wszystkich ludzi."
-                              " Bóg dając potwierdzenie przyjęcia tej ofiary"
-                              " wskrzesił go i postawił po swojej prawicy, dając mu"
-                              " wszelką władzę na ziemi i niebie."),
-                      TextSpan(
-                          text:
-                              "\n        W tym momencie stoimy przed wyborem. Możemy"
-                              " wciąż pokładać nadzieję we własnych siłach, lub"
-                              " uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi, że"
-                              " kto ustami wyzna Jezusa Panem i uwierzy w swoim"
-                              " sercu, że Bóg wskrzesił go z martwych, będzie"
-                              " zbawiony (Rzym 10:9)."),
-                    ],
-                  ),
+                child: Text(
+                  "\t\t Na początku Bóg stworzył człowieka i chciał żyć z nim"
+                  " wiecznie. Jednak w swoim życiu decydujemy przeciwstawić się"
+                  " Mu, iść własną drogą. Łamiemy Boże prawo,"
+                  " stając się buntownikami i właśnie to Biblia nazwa grzechem."
+                  "\n\t\t W ten sposób wstępujemy na drogą, która"
+                  " prowadzi do wiecznej śmierci. Grzech jest"
+                  " przepaścią, która oddziela nas od Boga."
+                  " Mamy potrzebę powrotu do Niego i próbujemy"
+                  " to zrobić na różne sposoby: robiąc dobre uczynki,"
+                  " medytując czy żyjąc według własnej filozofii."
+                  " Niestety, sami nie możemy sobie pomóc."
+                  "\n\t\t Jednak Bóg, który nas kocha, znalazł rozwiązanie."
+                  " Zesłał na świat swojego ukochanego syna Jezusa (J 3:16),"
+                  " który żył jak jeden z nas, ale nigdy nie zgrzeszył."
+                  " Umarł na krzyżu, biorąc na siebie karę za grzech,"
+                  " która nam się należała. Bóg wskrzesił go z martwych"
+                  " i ustanowił królem."
+                  "\n\t\t Teraz każdy z nas musi zdecydować."
+                  " Jeśli uwierzymy, że Jezus zmartwychwstał"
+                  " i uznamy go za naszego Pana, wrócimy na"
+                  " drogę wiecznego życia z Bogiem (Rzym 10:9).",
+                  style: Theme.of(context).textTheme.subtitle1,
                 ),
               ),
             ],

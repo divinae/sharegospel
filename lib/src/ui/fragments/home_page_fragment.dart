@@ -480,7 +480,6 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                     borderRadius: BorderRadius.circular(20.0)),
                                 onPressed: () {
                                   city = controller.value.text.trim();
-                                  prefs.setString(CITY_KEY, city);
                                   Navigator.pop(context);
                                 },
                                 child: Text(
@@ -511,15 +510,27 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         Map<String, dynamic> data = new Map<String, dynamic>();
         data[CITY_NAME_KEY] = city;
 
-        FirebaseFirestore.instance
+        DocumentSnapshot document = await FirebaseFirestore.instance
             .collection(CITIES_DB)
-            .doc(city)
-            .set(data)
-            .then((result) {
-          logger.d('city added');
-        }).catchError((onError) {
-          logger.e('error ${onError.toString()}');
-        });
+            .doc(city.toLowerCase())
+            .get();
+
+        if (document.data() != null) {
+          logger.d('city already created');
+          city = document.data()[CITY_NAME_KEY];
+        } else {
+          FirebaseFirestore.instance
+              .collection(CITIES_DB)
+              .doc(city.toLowerCase())
+              .set(data)
+              .then((result) {
+            logger.d('city added');
+          }).catchError((onError) {
+            logger.e('error ${onError.toString()}');
+          });
+        }
+
+        prefs.setString(CITY_KEY, city);
 
         setState(() {
           _city = city;

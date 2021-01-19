@@ -18,10 +18,9 @@ const String CANCEL_TEXT = "Anuluj";
 const String CITY_TEXT = "Twoje miasto:";
 const String CITY_COUNT_TEXT = "W twoim mieście";
 const String YOUR_COUNT_TEXT = "Dzięki tobie";
-const String PEOPLE_POSTFIX_TEXT = "osób";
 
 const String GOSPEL_HEARD_TEXT = "Ewangelię usłyszało:";
-const String INVITE_JESUS_TEXT = "Przyjeło Jezusa:";
+const String INVITE_JESUS_TEXT = "Przyjęło Jezusa:";
 
 const String ADD_TEXT = "Dodaj";
 
@@ -46,3 +45,25 @@ const String NO_INTERNET_ASSET_PATH = "assets/no_internet.png";
 const String GOSPEL_YOUTUBE_TITLE = "Jak dzielić się ewangelią?";
 const String GOSPEL_YOUTUBE_LINK =
     "https://www.youtube.com/watch?v=DakbXbI-hY0";
+
+getPeoplePostfix(int count) {
+  if (count == 0) {
+    return "osób";
+  } else if (count == 1) {
+    return "osoba";
+  } else if (count <= 4) {
+    return "osoby";
+  } else if (count < 22) {
+    return "osób";
+  } else {
+    String countString = count.toString();
+    int lastChar = countString.codeUnitAt(countString.length - 1) - 48;
+    int prevLastChar = countString.codeUnitAt(countString.length - 2) - 48;
+
+    if (prevLastChar >= 2 && lastChar >= 2 && lastChar <= 4) {
+      return "osoby";
+    } else {
+      return "osób";
+    }
+  }
+}
