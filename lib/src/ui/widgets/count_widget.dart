@@ -66,8 +66,8 @@ class _CountWidgetState extends State<CountWidget> {
   void initState() {
     super.initState();
     stream = FirebaseFirestore.instance
-        .collection(getSharesDB())
-        .where(CITY_KEY, isEqualTo: widget.city)
+        .collection(getCitiesDB())
+        .where(CITY_NAME_KEY, isEqualTo: widget.city)
         .snapshots();
   }
 
@@ -79,8 +79,8 @@ class _CountWidgetState extends State<CountWidget> {
       logger.d("update stream");
       setState(() {
         stream = FirebaseFirestore.instance
-            .collection(getSharesDB())
-            .where(CITY_KEY, isEqualTo: widget.city)
+            .collection(getCitiesDB())
+            .where(CITY_NAME_KEY, isEqualTo: widget.city)
             .snapshots();
       });
     }
@@ -310,7 +310,7 @@ class _CountWidgetState extends State<CountWidget> {
     }
 
     FirebaseFirestore.instance
-        .collection(getSharesDB())
+        .collection(getCitiesDB())
         .doc(documentUuid)
         .update({
       SHARES_COUNT_KEY: sharesCount + 1,
@@ -325,8 +325,8 @@ class _CountWidgetState extends State<CountWidget> {
   _refreshStream() async {
     setState(() {
       stream = FirebaseFirestore.instance
-          .collection(getSharesDB())
-          .where(CITY_KEY, isEqualTo: widget.city)
+          .collection(getCitiesDB())
+          .where(CITY_NAME_KEY, isEqualTo: widget.city)
           .snapshots();
     });
   }

@@ -1,10 +1,5 @@
 import 'package:flutter/foundation.dart';
-
 import 'consts.dart';
-
-getSharesDB() {
-  return kDebugMode ? SHARES_DEV_DB : SHARES_DB;
-}
 
 getCitiesDB() {
   return kDebugMode ? CITIES_DEV_DB : CITIES_DB;

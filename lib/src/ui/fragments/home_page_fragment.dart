@@ -69,7 +69,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
   _loadCity(var context) async {
     logger.d("loadCity");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String city = (prefs.getString(CITY_KEY) ?? null);
+    String city = (prefs.getString(CITY_NAME_KEY) ?? null);
     ScrollController scrollController = ScrollController();
 
     if (city == null) {
@@ -165,7 +165,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                   _addNewCity(context);
                                 } else {
                                   city = _group[selectedRadio].text;
-                                  prefs.setString(CITY_KEY, city);
+                                  prefs.setString(CITY_NAME_KEY, city);
                                   Navigator.pop(context);
                                 }
                               },
@@ -325,7 +325,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                     _addNewCity(context);
                                   } else {
                                     city = _group[selectedRadio].text;
-                                    prefs.setString(CITY_KEY, city);
+                                    prefs.setString(CITY_NAME_KEY, city);
                                     Navigator.pop(context);
                                   }
                                 },
@@ -478,7 +478,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         _createCityDoc(city);
       }
 
-      prefs.setString(CITY_KEY, city);
+      prefs.setString(CITY_NAME_KEY, city);
 
       setState(() {
         _city = city;
@@ -492,28 +492,15 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[CITY_NAME_KEY] = city;
+    data[SHARES_COUNT_KEY] = 0;
+    data[SAVED_COUNT_KEY] = 0;
 
     FirebaseFirestore.instance
         .collection(getCitiesDB())
         .doc(city.toLowerCase())
         .set(data)
         .then((result) {
-      logger.d('city created');
-    }).catchError((onError) {
-      logger.e('error ${onError.toString()}');
-    });
-
-    data = new Map<String, dynamic>();
-    data[CITY_KEY] = city;
-    data[SHARES_COUNT_KEY] = 0;
-    data[SAVED_COUNT_KEY] = 0;
-
-    FirebaseFirestore.instance
-        .collection(getSharesDB())
-        .doc()
-        .set(data)
-        .then((result) {
-      logger.d('shares created');
+      logger.d('city doc created');
     }).catchError((onError) {
       logger.e('error ${onError.toString()}');
     });
