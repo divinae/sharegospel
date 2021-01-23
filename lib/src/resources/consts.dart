@@ -46,6 +46,15 @@ const String GOSPEL_YOUTUBE_TITLE = "Jak dzielić się ewangelią?";
 const String GOSPEL_YOUTUBE_LINK =
     "https://www.youtube.com/watch?v=DakbXbI-hY0";
 
+const String GOSPEL_IMAGE_PATH = "assets/ewangelia.png";
+
+const String GOSPEL_TEXT =
+    "\t\t Bóg stworzył nas, abyśmy mieli z Nim wieczną relację. Jednak w swoim życiu decydujemy, przeciwstawić się Mu. Odwracamy się od Niego, co przez Biblię nazwane jest grzechem. W innym miejscu Biblia mówi, że zapłatą za grzech jest śmierć (Rz 6:23)."
+    "\n\t\t W ten sposób wstępujemy na drogę, której końcem jest wieczne potępienie. Robiąc dobre uczynki czy wykonując religijne obrzędy, próbujemy się usprawiedliwiać. Pomijając Boga, szukamy szczęścia w rzeczach materialnych czy sukcesie. Lecz własnymi siłami nie możemy pokonać przepaści oddzielającej nas od Stwórcy."
+    "\n\t\t Na szczęście Bóg znalazł rozwiązanie. Zesłał na świat swojego syna Jezusa Chrystusa (J 3:16). On, pomimo swojej boskiej natury, stał się człowiekiem. Żył bezgrzesznym życiem i został zabity na krzyżu, składając ofiarę za grzechy wszystkich ludzi (Iz 53,4-7). Bóg wskrzesił go i postawił po swojej prawicy, dając Mu wszelką władzę na ziemi i niebie."
+    "\n\t\t W tym momencie stoimy przed wyborem. Możemy wciąż pokładać nadzieję we własnych siłach lub uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi o tym, że kto ustami wyzna Jezusa Panem i uwierzy w swoim sercu, że Bóg wskrzesił go z martwych, będzie zbawiony (Rzym 10:9)."
+    "\n\t\t A Ty, w czym pokładasz swoją nadzieję?";
+
 getPeoplePostfix(int count) {
   if (count == 0) {
     return "osób";

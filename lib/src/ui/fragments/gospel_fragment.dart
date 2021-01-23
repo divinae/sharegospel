@@ -55,32 +55,12 @@ class _GospelFragmentState extends State<GospelFragment> {
                 borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 child: FadeInImage(
                     placeholder: MemoryImage(kTransparentImage),
-                    image: AssetImage("assets/ewangelia.png")),
+                    image: AssetImage(GOSPEL_IMAGE_PATH)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "\t\t Na początku Bóg stworzył człowieka i chciał żyć z nim"
-                  " wiecznie. Jednak w swoim życiu decydujemy przeciwstawić się"
-                  " Mu, iść własną drogą. Łamiemy Boże prawo,"
-                  " stając się buntownikami i właśnie to Biblia nazwa grzechem."
-                  "\n\t\t W ten sposób wstępujemy na drogą, która"
-                  " prowadzi do wiecznej śmierci. Grzech jest"
-                  " przepaścią, która oddziela nas od Boga."
-                  " Mamy potrzebę powrotu do Niego i próbujemy"
-                  " to zrobić na różne sposoby: robiąc dobre uczynki,"
-                  " medytując czy żyjąc według własnej filozofii."
-                  " Niestety, sami nie możemy sobie pomóc."
-                  "\n\t\t Jednak Bóg, który nas kocha, znalazł rozwiązanie."
-                  " Zesłał na świat swojego ukochanego syna Jezusa (J 3:16),"
-                  " który żył jak jeden z nas, ale nigdy nie zgrzeszył."
-                  " Umarł na krzyżu, biorąc na siebie karę za grzech,"
-                  " która nam się należała. Bóg wskrzesił go z martwych"
-                  " i ustanowił królem."
-                  "\n\t\t Teraz każdy z nas musi zdecydować."
-                  " Jeśli uwierzymy, że Jezus zmartwychwstał"
-                  " i uznamy go za naszego Pana, wrócimy na"
-                  " drogę wiecznego życia z Bogiem (Rzym 10:9).",
+                  GOSPEL_TEXT,
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
               ),
