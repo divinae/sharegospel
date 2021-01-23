@@ -26,7 +26,9 @@ const String ADD_TEXT = "Dodaj";
 
 const String UUID_KEY = "uuid";
 
+const String SHARES_DEV_DB = "shares_dev";
 const String SHARES_DB = "shares";
+const String CITIES_DEV_DB = "cities_dev";
 const String CITIES_DB = "cities";
 
 const String SHARES_COUNT_KEY = "shares_count";
@@ -54,25 +56,3 @@ const String GOSPEL_TEXT =
     "\n\t\t Na szczęście Bóg znalazł rozwiązanie. Zesłał na świat swojego syna Jezusa Chrystusa (J 3:16). On, pomimo swojej boskiej natury, stał się człowiekiem. Żył bezgrzesznym życiem i został zabity na krzyżu, składając ofiarę za grzechy wszystkich ludzi (Iz 53,4-7). Bóg wskrzesił go i postawił po swojej prawicy, dając Mu wszelką władzę na ziemi i niebie."
     "\n\t\t W tym momencie stoimy przed wyborem. Możemy wciąż pokładać nadzieję we własnych siłach lub uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi o tym, że kto ustami wyzna Jezusa Panem i uwierzy w swoim sercu, że Bóg wskrzesił go z martwych, będzie zbawiony (Rzym 10:9)."
     "\n\t\t A Ty, w czym pokładasz swoją nadzieję?";
-
-getPeoplePostfix(int count) {
-  if (count == 0) {
-    return "osób";
-  } else if (count == 1) {
-    return "osoba";
-  } else if (count <= 4) {
-    return "osoby";
-  } else if (count < 22) {
-    return "osób";
-  } else {
-    String countString = count.toString();
-    int lastChar = countString.codeUnitAt(countString.length - 1) - 48;
-    int prevLastChar = countString.codeUnitAt(countString.length - 2) - 48;
-
-    if (prevLastChar >= 2 && lastChar >= 2 && lastChar <= 4) {
-      return "osoby";
-    } else {
-      return "osób";
-    }
-  }
-}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sharegospel/src/resources/utils.dart';
 import '../../resources/consts.dart';
 import 'package:transparent_image/transparent_image.dart';
 

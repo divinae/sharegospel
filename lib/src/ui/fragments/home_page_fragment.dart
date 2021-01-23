@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sharegospel/src/resources/utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
@@ -77,7 +78,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
       int index = 0;
 
       await FirebaseFirestore.instance
-          .collection(CITIES_DB)
+          .collection(getCitiesDB())
           .get()
           .then((QuerySnapshot snapshot) {
         var documents = snapshot.docs;
@@ -208,7 +209,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     int index = 0;
 
     await FirebaseFirestore.instance
-        .collection(CITIES_DB)
+        .collection(getCitiesDB())
         .get()
         .then((QuerySnapshot snapshot) {
       var documents = snapshot.docs;
@@ -465,11 +466,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     if (city != null) {
       logger.d("city $city");
 
-      Map<String, dynamic> data = new Map<String, dynamic>();
-      data[CITY_NAME_KEY] = city;
-
       DocumentSnapshot document = await FirebaseFirestore.instance
-          .collection(CITIES_DB)
+          .collection(getCitiesDB())
           .doc(city.toLowerCase())
           .get();
 
@@ -477,15 +475,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         logger.d('city already created');
         city = document.data()[CITY_NAME_KEY];
       } else {
-        FirebaseFirestore.instance
-            .collection(CITIES_DB)
-            .doc(city.toLowerCase())
-            .set(data)
-            .then((result) {
-          logger.d('city added');
-        }).catchError((onError) {
-          logger.e('error ${onError.toString()}');
-        });
+        _createCityDoc(city);
       }
 
       prefs.setString(CITY_KEY, city);
@@ -495,6 +485,38 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         _isDialogVisible = false;
       });
     }
+  }
+
+  _createCityDoc(String city) {
+    logger.d('_createCityDoc $city');
+
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[CITY_NAME_KEY] = city;
+
+    FirebaseFirestore.instance
+        .collection(getCitiesDB())
+        .doc(city.toLowerCase())
+        .set(data)
+        .then((result) {
+      logger.d('city created');
+    }).catchError((onError) {
+      logger.e('error ${onError.toString()}');
+    });
+
+    data = new Map<String, dynamic>();
+    data[CITY_KEY] = city;
+    data[SHARES_COUNT_KEY] = 0;
+    data[SAVED_COUNT_KEY] = 0;
+
+    FirebaseFirestore.instance
+        .collection(getSharesDB())
+        .doc()
+        .set(data)
+        .then((result) {
+      logger.d('shares created');
+    }).catchError((onError) {
+      logger.e('error ${onError.toString()}');
+    });
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import '../../resources/consts.dart';
@@ -65,7 +66,7 @@ class _CountWidgetState extends State<CountWidget> {
   void initState() {
     super.initState();
     stream = FirebaseFirestore.instance
-        .collection(SHARES_DB)
+        .collection(getSharesDB())
         .where(CITY_KEY, isEqualTo: widget.city)
         .snapshots();
   }
@@ -78,7 +79,7 @@ class _CountWidgetState extends State<CountWidget> {
       logger.d("update stream");
       setState(() {
         stream = FirebaseFirestore.instance
-            .collection(SHARES_DB)
+            .collection(getSharesDB())
             .where(CITY_KEY, isEqualTo: widget.city)
             .snapshots();
       });
@@ -166,6 +167,9 @@ class _CountWidgetState extends State<CountWidget> {
 
   _getData(Iterable<DocumentSnapshot> documents) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!this.mounted) {
+      return;
+    }
     setState(() {
       deviceSharesCount = (prefs.getInt(DEVICE_SHARES_COUNT_KEY) ?? 0);
       deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
@@ -178,8 +182,6 @@ class _CountWidgetState extends State<CountWidget> {
         sharesCount = item.data()[SHARES_COUNT_KEY] as int;
         savedCount = item.data()[SAVED_COUNT_KEY] as int;
       });
-    } else {
-      _createDoc();
     }
   }
 
@@ -307,7 +309,10 @@ class _CountWidgetState extends State<CountWidget> {
       await prefs.setInt(DEVICE_SAVED_COUNT_KEY, deviceSavedCount + 1);
     }
 
-    FirebaseFirestore.instance.collection(SHARES_DB).doc(documentUuid).update({
+    FirebaseFirestore.instance
+        .collection(getSharesDB())
+        .doc(documentUuid)
+        .update({
       SHARES_COUNT_KEY: sharesCount + 1,
       SAVED_COUNT_KEY: saved ? savedCount + 1 : savedCount
     }).then((result) {
@@ -317,28 +322,10 @@ class _CountWidgetState extends State<CountWidget> {
     });
   }
 
-  _createDoc() {
-    logger.d('_createDoc ${widget.city}');
-    Map<String, dynamic> data = new Map<String, dynamic>();
-    data[CITY_KEY] = widget.city;
-    data[SHARES_COUNT_KEY] = 0;
-    data[SAVED_COUNT_KEY] = 0;
-
-    FirebaseFirestore.instance
-        .collection(SHARES_DB)
-        .doc()
-        .set(data)
-        .then((result) {
-      logger.d('added');
-    }).catchError((onError) {
-      logger.e('error ${onError.toString()}');
-    });
-  }
-
   _refreshStream() async {
     setState(() {
       stream = FirebaseFirestore.instance
-          .collection(SHARES_DB)
+          .collection(getSharesDB())
           .where(CITY_KEY, isEqualTo: widget.city)
           .snapshots();
     });
