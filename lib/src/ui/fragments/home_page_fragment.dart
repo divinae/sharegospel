@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/ui/widgets/count_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:logger/logger.dart';
 
 class HomePageFragment extends StatefulWidget {
@@ -16,8 +14,6 @@ class HomePageFragment extends StatefulWidget {
 }
 
 class _HomePageFragmentState extends State<HomePageFragment> {
-  ConnectivityResult connectionResult;
-  var subscription;
   String _uuid;
   String _city;
   var _isDialogVisible = false;
@@ -26,46 +22,17 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
   @override
   void initState() {
-    logger.d("initState");
-    Connectivity().checkConnectivity().then((val) => connectionResult = val);
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      logger.d("internet state changed state=" + result.toString());
-      setState(() {
-        connectionResult = result;
-      });
-    });
     super.initState();
   }
 
   @override
   void dispose() {
-    subscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     logger.d("build");
-
-    if (connectionResult == ConnectivityResult.none) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: AssetImage(NO_INTERNET_ASSET_PATH),
-              height: 150,
-            ),
-            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
-            Text(NO_INTERNET_TEXT, style: Theme.of(context).textTheme.subtitle1)
-          ],
-        ),
-      );
-    }
-
     if (_city == null && !_isDialogVisible) {
       _loadCity(context);
     }
@@ -104,9 +71,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     String city = (prefs.getString(CITY_KEY) ?? null);
     ScrollController scrollController = ScrollController();
 
-    if (city == null && connectionResult == ConnectivityResult.none) {
-      return;
-    } else if (city == null && connectionResult != ConnectivityResult.none) {
+    if (city == null) {
       _isDialogVisible = true;
       List<GroupModel> _group = [];
       int index = 0;
@@ -118,7 +83,8 @@ class _HomePageFragmentState extends State<HomePageFragment> {
         var documents = snapshot.docs;
         documents.sort((a, b) => a
             .data()[CITY_NAME_KEY]
-            .toString().toLowerCase()
+            .toString()
+            .toLowerCase()
             .compareTo(b.data()[CITY_NAME_KEY].toString().toLowerCase()));
         documents.forEach((document) => _group.add(GroupModel(
               text: document.data()[CITY_NAME_KEY],
@@ -237,207 +203,80 @@ class _HomePageFragmentState extends State<HomePageFragment> {
     String city;
     ScrollController scrollController = ScrollController();
 
-    if (connectionResult == ConnectivityResult.none) {
-      return;
-    } else {
-      _isDialogVisible = true;
-      List<GroupModel> _group = [];
-      int index = 0;
+    _isDialogVisible = true;
+    List<GroupModel> _group = [];
+    int index = 0;
 
-      await FirebaseFirestore.instance
-          .collection(CITIES_DB)
-          .get()
-          .then((QuerySnapshot snapshot) {
-        var documents = snapshot.docs;
-        documents.sort((a, b) => a
-            .data()[CITY_NAME_KEY]
-            .toString().toLowerCase()
-            .compareTo(b.data()[CITY_NAME_KEY].toString().toLowerCase()));
-        documents.forEach((document) => _group.add(GroupModel(
-              text: document.data()[CITY_NAME_KEY],
-              index: index++,
-            )));
-      });
+    await FirebaseFirestore.instance
+        .collection(CITIES_DB)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      var documents = snapshot.docs;
+      documents.sort((a, b) => a
+          .data()[CITY_NAME_KEY]
+          .toString()
+          .toLowerCase()
+          .compareTo(b.data()[CITY_NAME_KEY].toString().toLowerCase()));
+      documents.forEach((document) => _group.add(GroupModel(
+            text: document.data()[CITY_NAME_KEY],
+            index: index++,
+          )));
+    });
 
-      _group.add(GroupModel(
-        text: ADD_NEW_CITY_TEXT,
-        index: index++,
-      ));
+    _group.add(GroupModel(
+      text: ADD_NEW_CITY_TEXT,
+      index: index++,
+    ));
 
-      await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            int selectedRadio;
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              child: StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 400,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(CHOOSE_CITY_TEXT,
-                              style: Theme.of(context).textTheme.headline6),
-                        ),
-                        Divider(),
-                        Expanded(
-                          child: Scrollbar(
-                            radius: Radius.circular(20),
-                            controller: scrollController,
-                            isAlwaysShown: true,
-                            child: ListView.builder(
-                              controller: scrollController,
-                              padding: const EdgeInsets.all(0),
-                              itemCount: _group == null ? 1 : _group.length,
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                return RadioListTile(
-                                  title: Text("${_group[index].text}"),
-                                  groupValue: selectedRadio,
-                                  value: _group[index].index,
-                                  onChanged: (index) {
-                                    logger.d("select_radio set state");
-                                    setState(() {
-                                      selectedRadio = index;
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SizedBox(
-                                height: 40,
-                                width: 120,
-                                child: FlatButton(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20.0)),
-                                  onPressed: () {
-                                    city = null;
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    CANCEL_TEXT,
-                                    style: TextStyle(
-                                        color: MediaQuery.of(context)
-                                                    .platformBrightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black54),
-                                  ),
-                                  color: Theme.of(context).dividerColor,
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                              ),
-                              SizedBox(
-                                width: 120,
-                                height: 40,
-                                child: FlatButton(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20.0)),
-                                  onPressed: () {
-                                    if (_group[selectedRadio].text ==
-                                        ADD_NEW_CITY_TEXT) {
-                                      Navigator.pop(context);
-                                      _addNewCity(context);
-                                    } else {
-                                      city = _group[selectedRadio].text;
-                                      prefs.setString(CITY_KEY, city);
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                  child: Text(
-                                    OK_TEXT,
-                                    style: TextStyle(
-                                        color: MediaQuery.of(context)
-                                                    .platformBrightness ==
-                                                Brightness.dark
-                                            ? Colors.black
-                                            : Colors.white),
-                                  ),
-                                  color: Theme.of(context).accentColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            );
-          });
-    }
-
-    if (city != null) {
-      logger.d("city $city");
-      setState(() {
-        _city = city;
-        _isDialogVisible = false;
-      });
-    }
-  }
-
-  _addNewCity(var context) async {
-    logger.d("addNewCity");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String city;
-
-    if (connectionResult == ConnectivityResult.none) {
-      return;
-    } else {
-      _isDialogVisible = true;
-
-      await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            final controller = TextEditingController();
-
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              child: StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
+    await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          int selectedRadio;
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 400,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(ADD_NEW_CITY_TEXT,
+                        child: Text(CHOOSE_CITY_TEXT,
                             style: Theme.of(context).textTheme.headline6),
                       ),
                       Divider(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: TextField(
-                          controller: controller,
-                          autofocus: true,
+                      Expanded(
+                        child: Scrollbar(
+                          radius: Radius.circular(20),
+                          controller: scrollController,
+                          isAlwaysShown: true,
+                          child: ListView.builder(
+                            controller: scrollController,
+                            padding: const EdgeInsets.all(0),
+                            itemCount: _group == null ? 1 : _group.length,
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext context, int index) {
+                              return RadioListTile(
+                                title: Text("${_group[index].text}"),
+                                groupValue: selectedRadio,
+                                value: _group[index].index,
+                                onChanged: (index) {
+                                  logger.d("select_radio set state");
+                                  setState(() {
+                                    selectedRadio = index;
+                                  });
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Divider(),
@@ -479,8 +318,15 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.0)),
                                 onPressed: () {
-                                  city = controller.value.text.trim();
-                                  Navigator.pop(context);
+                                  if (_group[selectedRadio].text ==
+                                      ADD_NEW_CITY_TEXT) {
+                                    Navigator.pop(context);
+                                    _addNewCity(context);
+                                  } else {
+                                    city = _group[selectedRadio].text;
+                                    prefs.setString(CITY_KEY, city);
+                                    Navigator.pop(context);
+                                  }
                                 },
                                 child: Text(
                                   OK_TEXT,
@@ -499,44 +345,155 @@ class _HomePageFragmentState extends State<HomePageFragment> {
                       )
                     ],
                   ),
-                );
-              }),
-            );
-          });
+                ),
+              );
+            }),
+          );
+        });
 
-      if (city != null) {
-        logger.d("city $city");
+    if (city != null) {
+      logger.d("city $city");
+      setState(() {
+        _city = city;
+        _isDialogVisible = false;
+      });
+    }
+  }
 
-        Map<String, dynamic> data = new Map<String, dynamic>();
-        data[CITY_NAME_KEY] = city;
+  _addNewCity(var context) async {
+    logger.d("addNewCity");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String city;
 
-        DocumentSnapshot document = await FirebaseFirestore.instance
+    _isDialogVisible = true;
+
+    await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          final controller = TextEditingController();
+
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(ADD_NEW_CITY_TEXT,
+                          style: Theme.of(context).textTheme.headline6),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: TextField(
+                        controller: controller,
+                        autofocus: true,
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          SizedBox(
+                            height: 40,
+                            width: 120,
+                            child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                city = null;
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                CANCEL_TEXT,
+                                style: TextStyle(
+                                    color: MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black54),
+                              ),
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                          ),
+                          SizedBox(
+                            width: 120,
+                            height: 40,
+                            child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              onPressed: () {
+                                city = controller.value.text.trim();
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                OK_TEXT,
+                                style: TextStyle(
+                                    color: MediaQuery.of(context)
+                                                .platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white),
+                              ),
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }),
+          );
+        });
+
+    if (city != null) {
+      logger.d("city $city");
+
+      Map<String, dynamic> data = new Map<String, dynamic>();
+      data[CITY_NAME_KEY] = city;
+
+      DocumentSnapshot document = await FirebaseFirestore.instance
+          .collection(CITIES_DB)
+          .doc(city.toLowerCase())
+          .get();
+
+      if (document.data() != null) {
+        logger.d('city already created');
+        city = document.data()[CITY_NAME_KEY];
+      } else {
+        FirebaseFirestore.instance
             .collection(CITIES_DB)
             .doc(city.toLowerCase())
-            .get();
-
-        if (document.data() != null) {
-          logger.d('city already created');
-          city = document.data()[CITY_NAME_KEY];
-        } else {
-          FirebaseFirestore.instance
-              .collection(CITIES_DB)
-              .doc(city.toLowerCase())
-              .set(data)
-              .then((result) {
-            logger.d('city added');
-          }).catchError((onError) {
-            logger.e('error ${onError.toString()}');
-          });
-        }
-
-        prefs.setString(CITY_KEY, city);
-
-        setState(() {
-          _city = city;
-          _isDialogVisible = false;
+            .set(data)
+            .then((result) {
+          logger.d('city added');
+        }).catchError((onError) {
+          logger.e('error ${onError.toString()}');
         });
       }
+
+      prefs.setString(CITY_KEY, city);
+
+      setState(() {
+        _city = city;
+        _isDialogVisible = false;
+      });
     }
   }
 }
