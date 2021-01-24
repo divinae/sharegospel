@@ -1,6 +1,6 @@
 const int MAX_SCREEN_WIDTH = 500;
 
-const String TITLE_TEXT = "Share Gospel";
+const String TITLE_TEXT = "ShareGospel";
 const String HOME_PAGE_TEXT = "Strona główna";
 const String GOSPEL_PAGE_TEXT = "Ewangelia";
 const String ABOUT_TEXT = "O nas";
