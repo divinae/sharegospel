@@ -1,6 +1,7 @@
 import 'package:ext_video_player/ext_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:sharegospel/src/ui/video_player/youtube_card.dart';
@@ -59,9 +60,12 @@ class _GospelFragmentState extends State<GospelFragment> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
+                child: SelectableText(
                   GOSPEL_TEXT,
-                  style: Theme.of(context).textTheme.subtitle1,
+                  textAlign: TextAlign.justify,
+                  style: Theme.of(context).textTheme.bodyText2.copyWith(
+                        fontSize: 15,
+                      ),
                 ),
               ),
             ],

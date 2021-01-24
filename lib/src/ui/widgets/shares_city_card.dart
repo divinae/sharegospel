@@ -123,13 +123,15 @@ class SharesCityCard extends StatelessWidget {
           ),
           Align(
               alignment: Alignment.topRight,
-              child: IconButton(
-                  padding: const EdgeInsets.only(right: 8.0, top: 4.0),
-                  splashRadius: 25,
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    changeCity(context);
-                  }))
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0, top: 4.0),
+                child: IconButton(
+                    splashRadius: 25,
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      changeCity(context);
+                    }),
+              ))
         ],
       ),
     );
