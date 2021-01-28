@@ -3,7 +3,6 @@ const int MAX_SCREEN_WIDTH = 500;
 const String TITLE_TEXT = "ShareGospel";
 const String HOME_PAGE_TEXT = "Strona główna";
 const String GOSPEL_PAGE_TEXT = "Ewangelia";
-const String ABOUT_TEXT = "O nas";
 
 const String OK_TEXT = "OK";
 
@@ -47,8 +46,14 @@ const String GOSPEL_YOUTUBE_LINK =
 const String GOSPEL_IMAGE_PATH = "assets/ewangelia.png";
 
 const String GOSPEL_TEXT =
-    "\t\t Bóg stworzył nas, abyśmy mieli z Nim wieczną relację. Jednak w swoim życiu decydujemy, przeciwstawić się Mu. Odwracamy się od Niego, co przez Biblię nazwane jest grzechem. W innym miejscu Biblia mówi, że zapłatą za grzech jest śmierć (Rz\u00A06:23)."
-    "\n\t\t W ten sposób wstępujemy na drogę, której końcem jest wieczne potępienie. Robiąc dobre uczynki czy wykonując religijne obrzędy, próbujemy się usprawiedliwiać. Pomijając Boga, szukamy szczęścia w rzeczach materialnych czy sukcesie. Lecz własnymi siłami nie możemy pokonać przepaści oddzielającej nas od Stwórcy."
-    "\n\t\t Na szczęście Bóg znalazł rozwiązanie. Zesłał na świat swojego syna Jezusa Chrystusa (J\u00A03:16). On, pomimo swojej boskiej natury, stał się człowiekiem. Żył bezgrzesznym życiem i został zabity na krzyżu, składając ofiarę za grzechy wszystkich ludzi (Iz\u00A053:4-7). Bóg wskrzesił go i postawił po swojej prawicy, dając Mu wszelką władzę na ziemi i niebie."
-    "\n\t\t W tym momencie stoimy przed wyborem. Możemy wciąż pokładać nadzieję we własnych siłach lub uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi o tym, że kto ustami wyzna Jezusa Panem i uwierzy w swoim sercu, że Bóg wskrzesił go z martwych, będzie zbawiony (Rzym\u00A010:9)."
-    "\n\t\t A Ty, w czym pokładasz swoją nadzieję?";
+    "   Bóg stworzył nas, abyśmy mieli z Nim wieczną relację. Jednak w swoim życiu decydujemy, przeciwstawić się Mu. Odwracamy się od Niego, co przez Biblię nazwane jest grzechem. W innym miejscu Biblia mówi, że zapłatą za grzech jest śmierć (Rz\u00A06:23)."
+    "\n   W ten sposób wstępujemy na drogę, której końcem jest wieczne potępienie. Robiąc dobre uczynki czy wykonując religijne obrzędy, próbujemy się usprawiedliwiać. Pomijając Boga, szukamy szczęścia w rzeczach materialnych czy sukcesie. Lecz własnymi siłami nie możemy pokonać przepaści oddzielającej nas od Stwórcy."
+    "\n   Na szczęście Bóg znalazł rozwiązanie. Zesłał na świat swojego syna Jezusa Chrystusa (J\u00A03:16). On, pomimo swojej boskiej natury, stał się człowiekiem. Żył bezgrzesznym życiem i został zabity na krzyżu, składając ofiarę za grzechy wszystkich ludzi (Iz\u00A053:4-7). Bóg wskrzesił go i postawił po swojej prawicy, dając Mu wszelką władzę na ziemi i niebie."
+    "\n   W tym momencie stoimy przed wyborem. Możemy wciąż pokładać nadzieję we własnych siłach lub uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi o tym, że kto ustami wyzna Jezusa Panem i uwierzy w swoim sercu, że Bóg wskrzesił go z martwych, będzie zbawiony (Rzym\u00A010:9)."
+    "\n   A Ty, w czym pokładasz swoją nadzieję?";
+
+const List<String> HOME_IMAGES_URLS = [
+  'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
+  'https://www.john15.rocks/wp-content/uploads/2017/02/bible_good_news-696x464.jpg',
+  'https://i2.wp.com/redeeminggod.com/wp-content/uploads/2016/11/ShareTheGospel_630x315.jpg'
+];

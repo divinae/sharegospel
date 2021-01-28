@@ -1,188 +1,146 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharegospel/src/resources/utils.dart';
+import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
+import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
-final List<String> imgList = [
-  'https://www.csmedia1.com/northwestbaptist.church/the-gospel-the-power-of-god-series.jpg',
-  'https://www.john15.rocks/wp-content/uploads/2017/02/bible_good_news-696x464.jpg',
-  'https://i2.wp.com/redeeminggod.com/wp-content/uploads/2016/11/ShareTheGospel_630x315.jpg'
-];
 
 class CountWidget extends StatefulWidget {
-  final String uuid;
   final String city;
-  final Function changeCity;
+  final Stream<QuerySnapshot> stream;
 
-  const CountWidget(this.uuid, this.city, this.changeCity);
+  const CountWidget(this.city, this.stream);
 
   @override
   _CountWidgetState createState() => _CountWidgetState();
 }
 
 class _CountWidgetState extends State<CountWidget> {
-  var stream;
-  var subscription;
-  var documentUuid;
-  var logger = Logger();
+  var _logger = Logger();
 
-  var sharesCount = 0;
-  var savedCount = 0;
+  final List<Widget> _imageSliders =
+      HOME_IMAGES_URLS.map((imageUrl) => SliderWidget(imageUrl)).toList();
 
-  var deviceSharesCount = 0;
-  var deviceSavedCount = 0;
+  var _documentUuid;
 
-  final List<Widget> imageSliders = imgList
-      .map((item) => Container(
-            margin: EdgeInsets.all(0.0),
-            child: Card(
-              elevation: 2.0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                child: CachedNetworkImage(
-                  width: 1000,
-                  fit: BoxFit.cover,
-                  imageUrl: item,
-                  placeholder: (context, url) =>
-                      Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
-              ),
-            ),
-          ))
-      .toList();
+  var _sharesCount = 0;
+  var _savedCount = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    stream = FirebaseFirestore.instance
-        .collection(getCitiesDB())
-        .where(CITY_NAME_KEY, isEqualTo: widget.city)
-        .snapshots();
-  }
-
-  @override
-  void didUpdateWidget(CountWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    logger.d("old city=${oldWidget.city} new city= ${widget.city}");
-    if (oldWidget.city != widget.city) {
-      logger.d("update stream");
-      setState(() {
-        stream = FirebaseFirestore.instance
-            .collection(getCitiesDB())
-            .where(CITY_NAME_KEY, isEqualTo: widget.city)
-            .snapshots();
-      });
-    }
-  }
+  var _isDeviceCountsInitialized = false;
+  var _deviceSharesCount = 0;
+  var _deviceSavedCount = 0;
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () => _refreshStream(),
-      child: StreamBuilder(
-          stream: stream,
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
+    if (!_isDeviceCountsInitialized) {
+      _loadDeviceCounts();
+      return Center(child: CircularProgressIndicator());
+    }
 
-            _getData(snapshot.data.docs);
+    _logger.d("CountWidget build");
+    return StreamBuilder(
+        stream: widget.stream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            CarouselSlider(
-                              options: CarouselOptions(
-                                aspectRatio: 1.8,
-                                viewportFraction: 1.0,
-                                enlargeCenterPage: true,
-                                scrollDirection: Axis.horizontal,
-                                autoPlay: true,
-                              ),
-                              items: imageSliders,
+          _getData(snapshot.data.docs);
+
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          CarouselSlider(
+                            options: CarouselOptions(
+                              aspectRatio: 1.8,
+                              viewportFraction: 1.0,
+                              enlargeCenterPage: true,
+                              scrollDirection: Axis.horizontal,
+                              autoPlay: true,
                             ),
-                            SharesCard(
-                                title: YOUR_COUNT_TEXT,
-                                imagePath: PERSON_ASSET_PATH,
-                                sharesCount: deviceSharesCount,
-                                savedCount: deviceSavedCount),
-                            SharesCityCard(
-                              title: CITY_COUNT_TEXT,
-                              imagePath: CITY_ASSET_PATH,
-                              sharesCount: sharesCount,
-                              cityName: widget.city,
-                              savedCount: savedCount,
-                              changeCity: widget.changeCity,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 50),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+                            items: _imageSliders,
+                          ),
+                          SharesCard(
+                              title: YOUR_COUNT_TEXT,
+                              imagePath: PERSON_ASSET_PATH,
+                              sharesCount: _deviceSharesCount,
+                              savedCount: _deviceSavedCount),
+                          SharesCityCard(
+                            title: CITY_COUNT_TEXT,
+                            imagePath: CITY_ASSET_PATH,
+                            sharesCount: _sharesCount,
+                            cityName: widget.city,
+                            savedCount: _savedCount,
+                            changeCity: DialogHelper.changeCity,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 50),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
-                    child: FloatingActionButton.extended(
-                      foregroundColor:
-                          MediaQuery.of(context).platformBrightness ==
-                                  Brightness.dark
-                              ? Colors.black
-                              : Colors.white,
-                      label: Text(ADD_TEXT),
-                      icon: Icon(Icons.add),
-                      onPressed: () => {_showAddDialog()},
-                    ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
+                  child: FloatingActionButton.extended(
+                    foregroundColor:
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
+                    label: Text(ADD_TEXT),
+                    icon: Icon(Icons.add),
+                    onPressed: () => _showAddDialog(),
                   ),
-                )
-              ],
-            );
-          }),
-    );
+                ),
+              )
+            ],
+          );
+        });
   }
 
-  _getData(Iterable<DocumentSnapshot> documents) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  _getData(Iterable<DocumentSnapshot> documents) {
+    _logger.d("_getData for ${widget.city} docLength=${documents.length}");
+
     if (!this.mounted) {
       return;
     }
-    setState(() {
-      deviceSharesCount = (prefs.getInt(DEVICE_SHARES_COUNT_KEY) ?? 0);
-      deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
-    });
 
     if (documents.length > 0) {
       var item = documents.first;
-      documentUuid = item.id;
-      setState(() {
-        sharesCount = item.data()[SHARES_COUNT_KEY] as int;
-        savedCount = item.data()[SAVED_COUNT_KEY] as int;
-      });
+      _documentUuid = item.id;
+      _sharesCount = item.data()[SHARES_COUNT_KEY] as int;
+      _savedCount = item.data()[SAVED_COUNT_KEY] as int;
     }
+  }
+
+  _loadDeviceCounts() async {
+    _logger.d("_loadDeviceCounts");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      _deviceSharesCount = (prefs.getInt(DEVICE_SHARES_COUNT_KEY) ?? 0);
+      _deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
+      _isDeviceCountsInitialized = true;
+    });
   }
 
   _showAddDialog() {
@@ -301,33 +259,24 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   _addShare(bool saved) async {
-    logger.d("_addShare $saved");
+    _logger.d("_addShare $saved");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, deviceSharesCount + 1);
+    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, ++_deviceSharesCount);
     if (saved) {
-      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, deviceSavedCount + 1);
+      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, ++_deviceSavedCount);
     }
 
     FirebaseFirestore.instance
         .collection(getCitiesDB())
-        .doc(documentUuid)
+        .doc(_documentUuid)
         .update({
-      SHARES_COUNT_KEY: sharesCount + 1,
-      SAVED_COUNT_KEY: saved ? savedCount + 1 : savedCount
+      SHARES_COUNT_KEY: _sharesCount + 1,
+      SAVED_COUNT_KEY: saved ? _savedCount + 1 : _savedCount
     }).then((result) {
-      logger.d('added');
+      _logger.d('added');
     }).catchError((onError) {
-      logger.e('error ${onError.toString()}');
-    });
-  }
-
-  _refreshStream() async {
-    setState(() {
-      stream = FirebaseFirestore.instance
-          .collection(getCitiesDB())
-          .where(CITY_NAME_KEY, isEqualTo: widget.city)
-          .snapshots();
+      _logger.e('error ${onError.toString()}');
     });
   }
 }

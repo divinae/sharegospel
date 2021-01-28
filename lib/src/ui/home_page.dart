@@ -1,6 +1,9 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sharegospel/src/bloc/user_data_bloc.dart';
+import 'package:sharegospel/src/bloc/user_data_event.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
@@ -111,14 +114,18 @@ class HomePageState extends State<HomePage> {
                 width: screenWidth > MAX_SCREEN_WIDTH
                     ? MAX_SCREEN_WIDTH
                     : screenWidth,
-                child: PageView(
-                  controller: _pageViewController,
-                  children: _fragments,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _activePage = index;
-                    });
-                  },
+                child: BlocProvider(
+                  create: (BuildContext context) =>
+                      UserDataBloc()..add(InitUserDataEvent()),
+                  child: PageView(
+                    controller: _pageViewController,
+                    children: _fragments,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _activePage = index;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),

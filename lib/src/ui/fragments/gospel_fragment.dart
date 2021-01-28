@@ -1,9 +1,7 @@
 import 'package:ext_video_player/ext_video_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:logger/logger.dart';
 import 'package:sharegospel/src/ui/video_player/youtube_card.dart';
 import 'package:transparent_image/transparent_image.dart';
 import '../../resources/consts.dart';
@@ -16,7 +14,6 @@ class GospelFragment extends StatefulWidget {
 }
 
 class _GospelFragmentState extends State<GospelFragment> {
-  var logger = Logger();
   VideoPlayerController _controller;
 
   @override
