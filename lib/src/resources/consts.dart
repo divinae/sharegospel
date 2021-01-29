@@ -1,4 +1,5 @@
 const int MAX_SCREEN_WIDTH = 500;
+const int MAX_DIALOG_WIDTH = 400;
 
 const String TITLE_TEXT = "ShareGospel";
 const String HOME_PAGE_TEXT = "Strona główna";

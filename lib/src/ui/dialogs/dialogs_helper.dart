@@ -7,6 +7,7 @@ import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/data/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
 
 class DialogHelper {
   static var logger = Logger();
@@ -44,6 +45,8 @@ class DialogHelper {
         barrierDismissible: false,
         builder: (BuildContext context) {
           int selectedRadio = 0;
+          var screenWidth = MediaQuery.of(context).size.width;
+
           return Dialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
@@ -53,6 +56,9 @@ class DialogHelper {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: 400,
+                  width: screenWidth > MAX_SCREEN_WIDTH
+                      ? MAX_DIALOG_WIDTH
+                      : screenWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,36 +99,23 @@ class DialogHelper {
                       Divider(),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: 300,
-                          height: 40,
-                          child: FlatButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            onPressed: () {
-                              if (_group[selectedRadio].text ==
-                                  ADD_NEW_CITY_TEXT) {
-                                addNewCity(parentContext);
-                              } else {
-                                parentContext.read<UserDataBloc>().add(
-                                    SetCityEvent(_group[selectedRadio].text));
-                              }
+                        child: DialogButton(
+                          text: OK_TEXT,
+                          width: 300.0,
+                          isPositive: true,
+                          onPressed: () {
+                            if (_group[selectedRadio].text ==
+                                ADD_NEW_CITY_TEXT) {
+                              addNewCity(parentContext);
+                            } else {
+                              parentContext.read<UserDataBloc>().add(
+                                  SetCityEvent(_group[selectedRadio].text));
+                            }
 
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              OK_TEXT,
-                              style: TextStyle(
-                                  color: MediaQuery.of(context)
-                                              .platformBrightness ==
-                                          Brightness.dark
-                                      ? Colors.black
-                                      : Colors.white),
-                            ),
-                            color: Theme.of(context).accentColor,
-                          ),
+                            Navigator.pop(context);
+                          },
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -165,6 +158,8 @@ class DialogHelper {
         barrierDismissible: false,
         builder: (BuildContext context) {
           int selectedRadio;
+          var screenWidth = MediaQuery.of(context).size.width;
+
           return Dialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
@@ -174,6 +169,9 @@ class DialogHelper {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: 400,
+                  width: screenWidth > MAX_SCREEN_WIDTH
+                      ? MAX_DIALOG_WIDTH
+                      : screenWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -217,60 +215,33 @@ class DialogHelper {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            SizedBox(
-                              height: 40,
-                              width: 120,
-                              child: FlatButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  CANCEL_TEXT,
-                                  style: TextStyle(
-                                      color: MediaQuery.of(context)
-                                                  .platformBrightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black54),
-                                ),
-                                color: Theme.of(context).dividerColor,
-                              ),
+                            DialogButton(
+                              text: CANCEL_TEXT,
+                              width: 120.0,
+                              isPositive: false,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                             ),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
-                            SizedBox(
-                              width: 120,
-                              height: 40,
-                              child: FlatButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                onPressed: () {
-                                  if (_group[selectedRadio].text ==
-                                      ADD_NEW_CITY_TEXT) {
-                                    Navigator.pop(context);
-                                    addNewCity(parentContext);
-                                  } else {
-                                    parentContext.read<UserDataBloc>().add(
-                                        SetCityEvent(
-                                            _group[selectedRadio].text));
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: Text(
-                                  OK_TEXT,
-                                  style: TextStyle(
-                                      color: MediaQuery.of(context)
-                                                  .platformBrightness ==
-                                              Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                                ),
-                                color: Theme.of(context).accentColor,
-                              ),
+                            DialogButton(
+                              text: OK_TEXT,
+                              width: 120.0,
+                              isPositive: true,
+                              onPressed: () {
+                                if (_group[selectedRadio].text ==
+                                    ADD_NEW_CITY_TEXT) {
+                                  Navigator.pop(context);
+                                  addNewCity(parentContext);
+                                } else {
+                                  parentContext.read<UserDataBloc>().add(
+                                      SetCityEvent(_group[selectedRadio].text));
+                                  Navigator.pop(context);
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -292,6 +263,7 @@ class DialogHelper {
         barrierDismissible: false,
         builder: (BuildContext context) {
           final controller = TextEditingController();
+          var screenWidth = MediaQuery.of(context).size.width;
 
           return Dialog(
             shape: RoundedRectangleBorder(
@@ -300,83 +272,62 @@ class DialogHelper {
                 builder: (BuildContext context, StateSetter setState) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(ADD_NEW_CITY_TEXT,
-                          style: Theme.of(context).textTheme.headline6),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: TextField(
-                        controller: controller,
-                        autofocus: true,
+                child: Container(
+                  width: screenWidth > MAX_SCREEN_WIDTH
+                      ? MAX_DIALOG_WIDTH
+                      : screenWidth,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(ADD_NEW_CITY_TEXT,
+                            style: Theme.of(context).textTheme.headline6),
                       ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          SizedBox(
-                            height: 40,
-                            width: 120,
-                            child: FlatButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: controller,
+                          autofocus: true,
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            DialogButton(
+                              text: CANCEL_TEXT,
+                              width: 120.0,
+                              isPositive: false,
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: Text(
-                                CANCEL_TEXT,
-                                style: TextStyle(
-                                    color: MediaQuery.of(context)
-                                                .platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black54),
-                              ),
-                              color: Theme.of(context).dividerColor,
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                          ),
-                          SizedBox(
-                            width: 120,
-                            height: 40,
-                            child: FlatButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            DialogButton(
+                              text: OK_TEXT,
+                              width: 120.0,
+                              isPositive: true,
                               onPressed: () {
                                 parentContext.read<UserDataBloc>().add(
                                     CreateCityEvent(
                                         controller.value.text.trim()));
                                 Navigator.pop(context);
                               },
-                              child: Text(
-                                OK_TEXT,
-                                style: TextStyle(
-                                    color: MediaQuery.of(context)
-                                                .platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white),
-                              ),
-                              color: Theme.of(context).accentColor,
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               );
             }),
