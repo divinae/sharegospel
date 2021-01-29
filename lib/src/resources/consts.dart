@@ -58,3 +58,5 @@ const List<String> HOME_IMAGES_URLS = [
   'https://www.john15.rocks/wp-content/uploads/2017/02/bible_good_news-696x464.jpg',
   'https://i2.wp.com/redeeminggod.com/wp-content/uploads/2016/11/ShareTheGospel_630x315.jpg'
 ];
+
+const String SHARE_ADDED_SNACKBAR_TEXT = "Świetna robota!";

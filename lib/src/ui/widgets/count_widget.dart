@@ -9,6 +9,7 @@ import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
+import 'package:sharegospel/src/ui/widgets/snackbar.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -100,7 +101,7 @@ class _CountWidgetState extends State<CountWidget> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 48),
                   child: FloatingActionButton.extended(
                     foregroundColor:
                         MediaQuery.of(context).platformBrightness ==
@@ -241,6 +242,7 @@ class _CountWidgetState extends State<CountWidget> {
       SAVED_COUNT_KEY: saved ? _savedCount + 1 : _savedCount
     }).then((result) {
       _logger.d('added');
+      SnackBarHelper.showSnackBar(context, SHARE_ADDED_SNACKBAR_TEXT);
     }).catchError((onError) {
       _logger.e('error ${onError.toString()}');
     });
