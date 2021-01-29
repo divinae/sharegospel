@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/utils.dart';
 import '../../resources/consts.dart';
@@ -58,7 +59,9 @@ class SharesCityCard extends StatelessWidget {
                                   fit: FlexFit.loose,
                                   child: Text(
                                     "$cityName",
-                                    overflow: TextOverflow.fade,
+                                    overflow: kIsWeb
+                                        ? TextOverflow.clip
+                                        : TextOverflow.fade,
                                     softWrap: false,
                                     style: Theme.of(context)
                                         .textTheme
@@ -120,16 +123,17 @@ class SharesCityCard extends StatelessWidget {
             ),
           ),
           Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0, top: 4.0),
-                child: IconButton(
-                    splashRadius: 25,
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      changeCity(context);
-                    }),
-              ))
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0, top: 4.0),
+              child: IconButton(
+                  splashRadius: 25,
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    changeCity(context);
+                  }),
+            ),
+          )
         ],
       ),
     );

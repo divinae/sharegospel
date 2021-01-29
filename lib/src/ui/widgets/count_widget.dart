@@ -146,82 +146,84 @@ class _CountWidgetState extends State<CountWidget> {
 
   _showAddDialog() {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          var screenWidth = MediaQuery.of(context).size.width;
+      context: context,
+      builder: (BuildContext context) {
+        var screenWidth = MediaQuery.of(context).size.width;
 
-          return Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: screenWidth > MAX_SCREEN_WIDTH
-                      ? MAX_DIALOG_WIDTH
-                      : screenWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(ADD_TEXT,
-                            style: Theme.of(context).textTheme.headline6),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(BEEN_SAVED_TEXT,
-                            style: Theme.of(context).textTheme.subtitle1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: screenWidth > MAX_SCREEN_WIDTH
+                  ? MAX_DIALOG_WIDTH
+                  : screenWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(ADD_TEXT,
+                        style: Theme.of(context).textTheme.headline6),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(BEEN_SAVED_TEXT,
+                        style: Theme.of(context).textTheme.subtitle1),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        DialogButton(
+                          text: CANCEL_TEXT,
+                          width: 100.0,
+                          isPositive: false,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             DialogButton(
-                              text: CANCEL_TEXT,
-                              width: 100.0,
+                              text: NO_TEXT,
+                              width: 60.0,
                               isPositive: false,
                               onPressed: () {
+                                _addShare(false);
                                 Navigator.pop(context);
                               },
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                DialogButton(
-                                  text: NO_TEXT,
-                                  width: 60.0,
-                                  isPositive: false,
-                                  onPressed: () {
-                                    _addShare(false);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 4.0),
-                                ),
-                                DialogButton(
-                                  text: YES_TEXT,
-                                  width: 60.0,
-                                  isPositive: true,
-                                  onPressed: () {
-                                    _addShare(true);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            DialogButton(
+                              text: YES_TEXT,
+                              width: 60.0,
+                              isPositive: true,
+                              onPressed: () {
+                                _addShare(true);
+                                Navigator.pop(context);
+                              },
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ));
-        });
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   _addShare(bool saved) async {

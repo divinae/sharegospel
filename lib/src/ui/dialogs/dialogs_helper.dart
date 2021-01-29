@@ -41,17 +41,17 @@ class DialogHelper {
     });
 
     await showDialog(
-        context: parentContext,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          int selectedRadio = 0;
-          var screenWidth = MediaQuery.of(context).size.width;
+      context: parentContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        int selectedRadio = 0;
+        var screenWidth = MediaQuery.of(context).size.width;
 
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -87,9 +87,11 @@ class DialogHelper {
                                 value: _group[index].index,
                                 onChanged: (index) {
                                   logger.d("select_radio set state");
-                                  setState(() {
-                                    selectedRadio = index;
-                                  });
+                                  setState(
+                                    () {
+                                      selectedRadio = index;
+                                    },
+                                  );
                                 },
                               );
                             },
@@ -120,9 +122,11 @@ class DialogHelper {
                   ),
                 ),
               );
-            }),
-          );
-        });
+            },
+          ),
+        );
+      },
+    );
   }
 
   static changeCity(BuildContext parentContext) async {
@@ -154,17 +158,17 @@ class DialogHelper {
     ));
 
     await showDialog(
-        context: parentContext,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          int selectedRadio;
-          var screenWidth = MediaQuery.of(context).size.width;
+      context: parentContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        int selectedRadio;
+        var screenWidth = MediaQuery.of(context).size.width;
 
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -250,26 +254,28 @@ class DialogHelper {
                   ),
                 ),
               );
-            }),
-          );
-        });
+            },
+          ),
+        );
+      },
+    );
   }
 
   static addNewCity(BuildContext parentContext) async {
     logger.d("addNewCity");
 
     await showDialog(
-        context: parentContext,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          final controller = TextEditingController();
-          var screenWidth = MediaQuery.of(context).size.width;
+      context: parentContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final controller = TextEditingController();
+        var screenWidth = MediaQuery.of(context).size.width;
 
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -330,8 +336,10 @@ class DialogHelper {
                   ),
                 ),
               );
-            }),
-          );
-        });
+            },
+          ),
+        );
+      },
+    );
   }
 }
