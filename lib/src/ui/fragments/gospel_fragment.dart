@@ -4,7 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:sharegospel/src/ui/video_player/youtube_card.dart';
 import 'package:transparent_image/transparent_image.dart';
-import '../../resources/consts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GospelFragment extends StatefulWidget {
   const GospelFragment();
@@ -20,11 +20,14 @@ class _GospelFragmentState extends State<GospelFragment> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.network(GOSPEL_YOUTUBE_LINK);
-    _controller.addListener(() {
-      setState(() {});
+    Future.delayed(Duration.zero, () {
+      _controller = VideoPlayerController.network(
+          AppLocalizations.of(context).howToShareLink);
+      _controller.addListener(() {
+        setState(() {});
+      });
+      _controller.initialize();
     });
-    _controller.initialize();
   }
 
   @override
@@ -35,12 +38,16 @@ class _GospelFragmentState extends State<GospelFragment> {
 
   @override
   Widget build(BuildContext context) {
+    if (_controller == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return ListView(
       padding: EdgeInsets.all(8.0),
       children: <Widget>[
         YoutubeCard(
           controller: _controller,
-          title: GOSPEL_YOUTUBE_TITLE,
+          title: AppLocalizations.of(context).howToShare,
         ),
         Divider(height: 4, color: Colors.transparent),
         Card(
@@ -53,12 +60,13 @@ class _GospelFragmentState extends State<GospelFragment> {
                 borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 child: FadeInImage(
                     placeholder: MemoryImage(kTransparentImage),
-                    image: AssetImage(GOSPEL_IMAGE_PATH)),
+                    image: AssetImage(
+                        AppLocalizations.of(context).gospelImagePath)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
-                  GOSPEL_TEXT,
+                  AppLocalizations.of(context).gospelText,
                   textAlign: TextAlign.justify,
                   style: Theme.of(context).textTheme.bodyText2.copyWith(
                         fontSize: 15,

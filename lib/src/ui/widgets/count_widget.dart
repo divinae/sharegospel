@@ -11,6 +11,7 @@ import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CountWidget extends StatefulWidget {
   final String city;
@@ -76,12 +77,12 @@ class _CountWidgetState extends State<CountWidget> {
                             items: _imageSliders,
                           ),
                           SharesCard(
-                              title: YOUR_COUNT_TEXT,
+                              title: AppLocalizations.of(context).yourCount,
                               imagePath: PERSON_ASSET_PATH,
                               sharesCount: _deviceSharesCount,
                               savedCount: _deviceSavedCount),
                           SharesCityCard(
-                            title: CITY_COUNT_TEXT,
+                            title: AppLocalizations.of(context).cityCount,
                             imagePath: CITY_ASSET_PATH,
                             sharesCount: _sharesCount,
                             cityName: widget.city,
@@ -107,7 +108,7 @@ class _CountWidgetState extends State<CountWidget> {
                                 Brightness.dark
                             ? Colors.black
                             : Colors.white,
-                    label: Text(ADD_TEXT),
+                    label: Text(AppLocalizations.of(context).add),
                     icon: Icon(Icons.add),
                     onPressed: () => _showAddDialog(),
                   ),
@@ -166,12 +167,12 @@ class _CountWidgetState extends State<CountWidget> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(ADD_TEXT,
+                    child: Text(AppLocalizations.of(context).add,
                         style: Theme.of(context).textTheme.headline6),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(BEEN_SAVED_TEXT,
+                    child: Text(AppLocalizations.of(context).beenSaved,
                         style: Theme.of(context).textTheme.subtitle1),
                   ),
                   Padding(
@@ -180,7 +181,7 @@ class _CountWidgetState extends State<CountWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         DialogButton(
-                          text: CANCEL_TEXT,
+                          text: AppLocalizations.of(context).cancel,
                           width: 100.0,
                           isPositive: false,
                           onPressed: () {
@@ -191,7 +192,7 @@ class _CountWidgetState extends State<CountWidget> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DialogButton(
-                              text: NO_TEXT,
+                              text: AppLocalizations.of(context).no,
                               width: 60.0,
                               isPositive: false,
                               onPressed: () {
@@ -204,7 +205,7 @@ class _CountWidgetState extends State<CountWidget> {
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
                             DialogButton(
-                              text: YES_TEXT,
+                              text: AppLocalizations.of(context).yes,
                               width: 60.0,
                               isPositive: true,
                               onPressed: () {

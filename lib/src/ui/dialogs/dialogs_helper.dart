@@ -8,6 +8,7 @@ import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/data/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogHelper {
   static var logger = Logger();
@@ -35,7 +36,7 @@ class DialogHelper {
           )));
 
       _group.add(GroupModel(
-        text: ADD_NEW_CITY_TEXT,
+        text: AppLocalizations.of(parentContext).addNewCity,
         index: index++,
       ));
     });
@@ -68,7 +69,7 @@ class DialogHelper {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(CHOOSE_CITY_TEXT,
+                          child: Text(AppLocalizations.of(context).chooseCity,
                               style: Theme.of(context).textTheme.headline6),
                         ),
                         Divider(),
@@ -104,12 +105,12 @@ class DialogHelper {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DialogButton(
-                            text: OK_TEXT,
+                            text: AppLocalizations.of(context).ok,
                             width: 300.0,
                             isPositive: true,
                             onPressed: () {
                               if (_group[selectedRadio].text ==
-                                  ADD_NEW_CITY_TEXT) {
+                                  AppLocalizations.of(context).addNewCity) {
                                 addNewCity(parentContext);
                               } else {
                                 parentContext.read<UserDataBloc>().add(
@@ -155,7 +156,7 @@ class DialogHelper {
           )));
 
       _group.add(GroupModel(
-        text: ADD_NEW_CITY_TEXT,
+        text: AppLocalizations.of(parentContext).addNewCity,
         index: index++,
       ));
     });
@@ -186,7 +187,7 @@ class DialogHelper {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(CHOOSE_CITY_TEXT,
+                        child: Text(AppLocalizations.of(context).chooseCity,
                             style: Theme.of(context).textTheme.headline6),
                       ),
                       Divider(),
@@ -223,7 +224,7 @@ class DialogHelper {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             DialogButton(
-                              text: CANCEL_TEXT,
+                              text: AppLocalizations.of(context).cancel,
                               width: 120.0,
                               isPositive: false,
                               onPressed: () {
@@ -235,12 +236,12 @@ class DialogHelper {
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
                             DialogButton(
-                              text: OK_TEXT,
+                              text: AppLocalizations.of(context).ok,
                               width: 120.0,
                               isPositive: true,
                               onPressed: () {
                                 if (_group[selectedRadio].text ==
-                                    ADD_NEW_CITY_TEXT) {
+                                    AppLocalizations.of(context).addNewCity) {
                                   Navigator.pop(context);
                                   addNewCity(parentContext);
                                 } else {
@@ -292,7 +293,7 @@ class DialogHelper {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(ADD_NEW_CITY_TEXT,
+                        child: Text(AppLocalizations.of(context).addNewCity,
                             style: Theme.of(context).textTheme.headline6),
                       ),
                       Divider(),
@@ -310,7 +311,7 @@ class DialogHelper {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             DialogButton(
-                              text: CANCEL_TEXT,
+                              text: AppLocalizations.of(context).cancel,
                               width: 120.0,
                               isPositive: false,
                               onPressed: () {
@@ -322,7 +323,7 @@ class DialogHelper {
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
                             DialogButton(
-                              text: OK_TEXT,
+                              text: AppLocalizations.of(context).ok,
                               width: 120.0,
                               isPositive: true,
                               onPressed: () {

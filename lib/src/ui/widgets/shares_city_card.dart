@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/utils.dart';
-import '../../resources/consts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SharesCityCard extends StatelessWidget {
@@ -52,7 +52,8 @@ class SharesCityCard extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("$CITY_TEXT ",
+                                Text(
+                                    "${AppLocalizations.of(context).yourCity} ",
                                     style:
                                         Theme.of(context).textTheme.subtitle1),
                                 Flexible(
@@ -75,7 +76,8 @@ class SharesCityCard extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("$GOSPEL_HEARD_TEXT ",
+                                Text(
+                                    "${AppLocalizations.of(context).gospelHeard} ",
                                     style:
                                         Theme.of(context).textTheme.subtitle1),
                                 Text(
@@ -86,7 +88,7 @@ class SharesCityCard extends StatelessWidget {
                                       .copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  " ${getPeoplePostfix(sharesCount)}",
+                                  " ${getPeoplePostfix(context, sharesCount)}",
                                   style: Theme.of(context).textTheme.subtitle1,
                                 ),
                               ],
@@ -95,7 +97,8 @@ class SharesCityCard extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("$INVITE_JESUS_TEXT ",
+                                Text(
+                                    "${AppLocalizations.of(context).inviteJesus} ",
                                     style:
                                         Theme.of(context).textTheme.subtitle1),
                                 Text("${savedCount.toString()}",
@@ -103,7 +106,8 @@ class SharesCityCard extends StatelessWidget {
                                         .textTheme
                                         .subtitle1
                                         .copyWith(fontWeight: FontWeight.bold)),
-                                Text(" ${getPeoplePostfix(savedCount)}",
+                                Text(
+                                    " ${getPeoplePostfix(context, savedCount)}",
                                     style:
                                         Theme.of(context).textTheme.subtitle1),
                               ],

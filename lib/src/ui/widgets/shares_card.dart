@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/utils.dart';
-import '../../resources/consts.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SharesCard extends StatelessWidget {
   const SharesCard({
@@ -45,7 +45,7 @@ class SharesCard extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("$GOSPEL_HEARD_TEXT ",
+                            Text("${AppLocalizations.of(context).gospelHeard} ",
                                 style: Theme.of(context).textTheme.subtitle1),
                             Text(
                               "${sharesCount.toString()}",
@@ -55,7 +55,7 @@ class SharesCard extends StatelessWidget {
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              " ${getPeoplePostfix(sharesCount)}",
+                              " ${getPeoplePostfix(context, sharesCount)}",
                               style: Theme.of(context).textTheme.subtitle1,
                             ),
                           ],
@@ -64,14 +64,14 @@ class SharesCard extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("$INVITE_JESUS_TEXT ",
+                            Text("${AppLocalizations.of(context).inviteJesus} ",
                                 style: Theme.of(context).textTheme.subtitle1),
                             Text("${savedCount.toString()}",
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
                                     .copyWith(fontWeight: FontWeight.bold)),
-                            Text(" ${getPeoplePostfix(savedCount)}",
+                            Text(" ${getPeoplePostfix(context, savedCount)}",
                                 style: Theme.of(context).textTheme.subtitle1),
                           ],
                         ),

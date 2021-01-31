@@ -9,6 +9,7 @@ import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DrawerItem {
   String title;
@@ -31,16 +32,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   var _subscription;
   var logger = Logger();
 
-  final _navigationItems = [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: HOME_PAGE_TEXT,
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.mood),
-      label: GOSPEL_PAGE_TEXT,
-    )
-  ];
+  String _getNavigationTitle(BuildContext context) {
+    if (_activePage == 0) {
+      return AppLocalizations.of(context).homePage;
+    } else {
+      return AppLocalizations.of(context).gospelPage;
+    }
+  }
 
   final List<Widget> _fragments = [
     HomePageFragment(),
@@ -91,10 +89,19 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             MediaQuery.of(context).platformBrightness == Brightness.dark
                 ? Colors.black26
                 : Colors.white,
-        title: Text(_navigationItems[_activePage].label),
+        title: Text(_getNavigationTitle(context)),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: _navigationItems,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: AppLocalizations.of(context).homePage,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mood),
+            label: AppLocalizations.of(context).gospelPage,
+          )
+        ],
         currentIndex: _activePage,
         backgroundColor:
             MediaQuery.of(context).platformBrightness == Brightness.dark
@@ -116,7 +123,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     height: 150,
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
-                  Text(NO_INTERNET_TEXT,
+                  Text(AppLocalizations.of(context).noInternet,
                       style: Theme.of(context).textTheme.subtitle1)
                 ],
               ),
