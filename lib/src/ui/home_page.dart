@@ -24,11 +24,11 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final _pageViewController = PageController();
   int _activePage = 0;
   ConnectivityResult connectionResult;
-  var subscription;
+  var _subscription;
   var logger = Logger();
 
   final _navigationItems = [
@@ -49,9 +49,11 @@ class HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
     logger.d("initState");
+    WidgetsBinding.instance.addObserver(this);
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
-    subscription = Connectivity()
+    _subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       logger.d("internet state changed state=" + result.toString());
@@ -59,14 +61,24 @@ class HomePageState extends State<HomePage> {
         connectionResult = result;
       });
     });
-    super.initState();
   }
 
   @override
   void dispose() {
     _pageViewController.dispose();
-    subscription.cancel();
+    _subscription.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      connectionResult = await (Connectivity().checkConnectivity());
+      logger.d(
+          "didChangeAppLifecycleState resume " + connectionResult.toString());
+      setState(() {});
+    }
   }
 
   @override

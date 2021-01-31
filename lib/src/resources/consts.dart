@@ -29,6 +29,7 @@ const String UUID_KEY = "uuid";
 const String CITIES_DEV_DB = "cities_dev";
 const String CITIES_DB = "cities";
 
+const String DOCUMENT_ID_KEY = '__name__';
 const String CITY_NAME_KEY = "city_name";
 const String SHARES_COUNT_KEY = "shares_count";
 const String SAVED_COUNT_KEY = "saved_count";

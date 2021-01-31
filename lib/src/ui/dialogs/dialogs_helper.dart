@@ -47,82 +47,85 @@ class DialogHelper {
         int selectedRadio = 0;
         var screenWidth = MediaQuery.of(context).size.width;
 
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 400,
-                  width: screenWidth > MAX_SCREEN_WIDTH
-                      ? MAX_DIALOG_WIDTH
-                      : screenWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(CHOOSE_CITY_TEXT,
-                            style: Theme.of(context).textTheme.headline6),
-                      ),
-                      Divider(),
-                      Expanded(
-                        child: Scrollbar(
-                          radius: Radius.circular(20),
-                          controller: scrollController,
-                          isAlwaysShown: true,
-                          child: ListView.builder(
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 400,
+                    width: screenWidth > MAX_SCREEN_WIDTH
+                        ? MAX_DIALOG_WIDTH
+                        : screenWidth,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(CHOOSE_CITY_TEXT,
+                              style: Theme.of(context).textTheme.headline6),
+                        ),
+                        Divider(),
+                        Expanded(
+                          child: Scrollbar(
+                            radius: Radius.circular(20),
                             controller: scrollController,
-                            padding: const EdgeInsets.all(0),
-                            itemCount: _group == null ? 1 : _group.length,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return RadioListTile(
-                                title: Text("${_group[index].text}"),
-                                groupValue: selectedRadio,
-                                value: _group[index].index,
-                                onChanged: (index) {
-                                  logger.d("select_radio set state");
-                                  setState(
-                                    () {
-                                      selectedRadio = index;
-                                    },
-                                  );
-                                },
-                              );
+                            isAlwaysShown: true,
+                            child: ListView.builder(
+                              controller: scrollController,
+                              padding: const EdgeInsets.all(0),
+                              itemCount: _group == null ? 1 : _group.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return RadioListTile(
+                                  title: Text("${_group[index].text}"),
+                                  groupValue: selectedRadio,
+                                  value: _group[index].index,
+                                  onChanged: (index) {
+                                    logger.d("select_radio set state");
+                                    setState(
+                                      () {
+                                        selectedRadio = index;
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Divider(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DialogButton(
+                            text: OK_TEXT,
+                            width: 300.0,
+                            isPositive: true,
+                            onPressed: () {
+                              if (_group[selectedRadio].text ==
+                                  ADD_NEW_CITY_TEXT) {
+                                addNewCity(parentContext);
+                              } else {
+                                parentContext.read<UserDataBloc>().add(
+                                    SetCityEvent(_group[selectedRadio].text));
+                              }
+
+                              Navigator.pop(context);
                             },
                           ),
                         ),
-                      ),
-                      Divider(),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: DialogButton(
-                          text: OK_TEXT,
-                          width: 300.0,
-                          isPositive: true,
-                          onPressed: () {
-                            if (_group[selectedRadio].text ==
-                                ADD_NEW_CITY_TEXT) {
-                              addNewCity(parentContext);
-                            } else {
-                              parentContext.read<UserDataBloc>().add(
-                                  SetCityEvent(_group[selectedRadio].text));
-                            }
-
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         );
       },
@@ -150,12 +153,12 @@ class DialogHelper {
             text: document.data()[CITY_NAME_KEY],
             index: index++,
           )));
-    });
 
-    _group.add(GroupModel(
-      text: ADD_NEW_CITY_TEXT,
-      index: index++,
-    ));
+      _group.add(GroupModel(
+        text: ADD_NEW_CITY_TEXT,
+        index: index++,
+      ));
+    });
 
     await showDialog(
       context: parentContext,
