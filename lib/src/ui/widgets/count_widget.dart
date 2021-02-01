@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/resources/utils.dart';
+import 'package:sharegospel/src/ui/data/add_share_data.dart';
 import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
-import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:sharegospel/generated/locale_keys.g.dart';
 
 class CountWidget extends StatefulWidget {
   final String city;
@@ -39,13 +42,18 @@ class _CountWidgetState extends State<CountWidget> {
 
   @override
   Widget build(BuildContext context) {
+    _logger.d("CountWidget build $_isDeviceCountsInitialized");
+
     if (!_isDeviceCountsInitialized) {
       _loadDeviceCounts();
       return Center(child: CircularProgressIndicator());
     }
 
-    _logger.d("CountWidget build");
-    return StreamBuilder(
+    return BlocListener<AddShareBloc, AddShareData>(
+      listener: (context, addShareData) {
+        _addShare(addShareData.saved);
+      },
+      child: StreamBuilder(
         stream: widget.stream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
@@ -76,12 +84,12 @@ class _CountWidgetState extends State<CountWidget> {
                             items: _imageSliders,
                           ),
                           SharesCard(
-                              title: YOUR_COUNT_TEXT,
+                              title: LocaleKeys.yourCount,
                               imagePath: PERSON_ASSET_PATH,
                               sharesCount: _deviceSharesCount,
                               savedCount: _deviceSavedCount),
                           SharesCityCard(
-                            title: CITY_COUNT_TEXT,
+                            title: LocaleKeys.cityCount,
                             imagePath: CITY_ASSET_PATH,
                             sharesCount: _sharesCount,
                             cityName: widget.city,
@@ -97,25 +105,11 @@ class _CountWidgetState extends State<CountWidget> {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
-                  child: FloatingActionButton.extended(
-                    foregroundColor:
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Colors.black
-                            : Colors.white,
-                    label: Text(ADD_TEXT),
-                    icon: Icon(Icons.add),
-                    onPressed: () => _showAddDialog(),
-                  ),
-                ),
-              )
             ],
           );
-        });
+        },
+      ),
+    );
   }
 
   _getData(Iterable<DocumentSnapshot> documents) {
@@ -142,88 +136,6 @@ class _CountWidgetState extends State<CountWidget> {
       _deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
       _isDeviceCountsInitialized = true;
     });
-  }
-
-  _showAddDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        var screenWidth = MediaQuery.of(context).size.width;
-
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: screenWidth > MAX_SCREEN_WIDTH
-                  ? MAX_DIALOG_WIDTH
-                  : screenWidth,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(ADD_TEXT,
-                        style: Theme.of(context).textTheme.headline6),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(BEEN_SAVED_TEXT,
-                        style: Theme.of(context).textTheme.subtitle1),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        DialogButton(
-                          text: CANCEL_TEXT,
-                          width: 100.0,
-                          isPositive: false,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            DialogButton(
-                              text: NO_TEXT,
-                              width: 60.0,
-                              isPositive: false,
-                              onPressed: () {
-                                _addShare(false);
-                                Navigator.pop(context);
-                              },
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4.0),
-                            ),
-                            DialogButton(
-                              text: YES_TEXT,
-                              width: 60.0,
-                              isPositive: true,
-                              onPressed: () {
-                                _addShare(true);
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   _addShare(bool saved) async {

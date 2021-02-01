@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'generated/codegen_loader.g.dart';
 import 'src/app.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dart:async';
@@ -15,7 +17,16 @@ void main() async {
   }
 
   runZonedGuarded(() {
-    runApp(MyApp());
+    runApp(
+      EasyLocalization(
+        supportedLocales: [Locale('en'), Locale('pl'), Locale('ru')],
+        path: 'assets/translations',
+        fallbackLocale: Locale('en'),
+        saveLocale: true,
+        assetLoader: CodegenLoader(),
+        child: MyApp(),
+      ),
+    );
   }, (error, stackTrace) {
     print('runZonedGuarded: Caught error in my root zone.');
     if (!kIsWeb) {

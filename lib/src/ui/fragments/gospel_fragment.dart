@@ -4,7 +4,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:sharegospel/src/ui/video_player/youtube_card.dart';
 import 'package:transparent_image/transparent_image.dart';
-import '../../resources/consts.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:sharegospel/generated/locale_keys.g.dart';
 
 class GospelFragment extends StatefulWidget {
   const GospelFragment();
@@ -20,7 +21,7 @@ class _GospelFragmentState extends State<GospelFragment> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.network(GOSPEL_YOUTUBE_LINK);
+    _controller = VideoPlayerController.network(LocaleKeys.howToShareLink.tr());
     _controller.addListener(() {
       setState(() {});
     });
@@ -40,7 +41,7 @@ class _GospelFragmentState extends State<GospelFragment> {
       children: <Widget>[
         YoutubeCard(
           controller: _controller,
-          title: GOSPEL_YOUTUBE_TITLE,
+          title: LocaleKeys.howToShare.tr(),
         ),
         Divider(height: 4, color: Colors.transparent),
         Card(
@@ -53,12 +54,12 @@ class _GospelFragmentState extends State<GospelFragment> {
                 borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 child: FadeInImage(
                     placeholder: MemoryImage(kTransparentImage),
-                    image: AssetImage(GOSPEL_IMAGE_PATH)),
+                    image: AssetImage(LocaleKeys.gospelImagePath.tr())),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
-                  GOSPEL_TEXT,
+                  LocaleKeys.gospelText.tr(),
                   textAlign: TextAlign.justify,
                   style: Theme.of(context).textTheme.bodyText2.copyWith(
                         fontSize: 15,

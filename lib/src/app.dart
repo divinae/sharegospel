@@ -1,8 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharegospel/src/resources/consts.dart';
+import 'bloc/add_share_bloc.dart';
 import 'ui/home_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,7 +22,10 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return MaterialApp(
-      title: TITLE_TEXT,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      title: APP_TITLE,
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.lightBlue,
@@ -28,7 +34,10 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       navigatorObservers: <NavigatorObserver>[observer],
-      home: HomePage(),
+      home: BlocProvider(
+        create: (BuildContext context) => AddShareBloc(),
+        child: HomePage(),
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:sharegospel/src/bloc/add_share_bloc.dart';
+import 'package:sharegospel/src/bloc/add_share_event.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_event.dart';
 import 'package:sharegospel/src/resources/consts.dart';
@@ -8,12 +10,138 @@ import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/data/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:sharegospel/generated/locale_keys.g.dart';
 
 class DialogHelper {
-  static var logger = Logger();
+  static var _logger = Logger();
+
+  static _setLanguage(BuildContext context, int index) {
+    _logger.d("setLanguage $index");
+    switch (index) {
+      case 0:
+        EasyLocalization.of(context).locale = Locale('en');
+        break;
+      case 1:
+        EasyLocalization.of(context).locale = Locale('pl');
+        break;
+      case 2:
+        EasyLocalization.of(context).locale = Locale('ru');
+        break;
+      default:
+        EasyLocalization.of(context).locale = Locale('en');
+        break;
+    }
+  }
+
+  static chooseLanguage(BuildContext parentContext) async {
+    _logger.d("chooseLanguage");
+
+    ScrollController scrollController = ScrollController();
+    List<GroupModel> _group = [];
+    int index = 0;
+
+    _group.addAll([
+      GroupModel(text: LocaleKeys.english.tr(), index: index++),
+      GroupModel(text: LocaleKeys.polish.tr(), index: index++),
+      GroupModel(text: LocaleKeys.russian.tr(), index: index++),
+    ]);
+
+    await showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        int selectedRadio;
+        var screenWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 300,
+                  width: screenWidth > MAX_SCREEN_WIDTH
+                      ? MAX_DIALOG_WIDTH
+                      : screenWidth,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(LocaleKeys.chooseCity.tr(),
+                            style: Theme.of(context).textTheme.headline6),
+                      ),
+                      Divider(),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.all(0),
+                          itemCount: _group == null ? 1 : _group.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return RadioListTile(
+                              title: Text("${_group[index].text}"),
+                              groupValue: selectedRadio,
+                              value: _group[index].index,
+                              onChanged: (index) {
+                                _logger.d("select_radio set state");
+                                setState(
+                                  () {
+                                    selectedRadio = index;
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            DialogButton(
+                              text: LocaleKeys.cancel.tr(),
+                              width: 120.0,
+                              isPositive: false,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            DialogButton(
+                              text: LocaleKeys.ok.tr(),
+                              width: 120.0,
+                              isPositive: true,
+                              onPressed: () {
+                                _setLanguage(parentContext, selectedRadio);
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   static loadCity(BuildContext parentContext) async {
-    logger.d("loadCity");
+    _logger.d("loadCity");
 
     ScrollController scrollController = ScrollController();
     List<GroupModel> _group = [];
@@ -35,7 +163,7 @@ class DialogHelper {
           )));
 
       _group.add(GroupModel(
-        text: ADD_NEW_CITY_TEXT,
+        text: LocaleKeys.addNewCity.tr(),
         index: index++,
       ));
     });
@@ -68,7 +196,7 @@ class DialogHelper {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(CHOOSE_CITY_TEXT,
+                          child: Text(LocaleKeys.chooseCity.tr(),
                               style: Theme.of(context).textTheme.headline6),
                         ),
                         Divider(),
@@ -88,7 +216,7 @@ class DialogHelper {
                                   groupValue: selectedRadio,
                                   value: _group[index].index,
                                   onChanged: (index) {
-                                    logger.d("select_radio set state");
+                                    _logger.d("select_radio set state");
                                     setState(
                                       () {
                                         selectedRadio = index;
@@ -104,12 +232,12 @@ class DialogHelper {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DialogButton(
-                            text: OK_TEXT,
+                            text: LocaleKeys.ok.tr(),
                             width: 300.0,
                             isPositive: true,
                             onPressed: () {
                               if (_group[selectedRadio].text ==
-                                  ADD_NEW_CITY_TEXT) {
+                                  LocaleKeys.addNewCity.tr()) {
                                 addNewCity(parentContext);
                               } else {
                                 parentContext.read<UserDataBloc>().add(
@@ -133,7 +261,7 @@ class DialogHelper {
   }
 
   static changeCity(BuildContext parentContext) async {
-    logger.d("changeCity");
+    _logger.d("changeCity");
 
     ScrollController scrollController = ScrollController();
     List<GroupModel> _group = [];
@@ -155,14 +283,13 @@ class DialogHelper {
           )));
 
       _group.add(GroupModel(
-        text: ADD_NEW_CITY_TEXT,
+        text: LocaleKeys.addNewCity.tr(),
         index: index++,
       ));
     });
 
     await showDialog(
       context: parentContext,
-      barrierDismissible: false,
       builder: (BuildContext context) {
         int selectedRadio;
         var screenWidth = MediaQuery.of(context).size.width;
@@ -186,7 +313,7 @@ class DialogHelper {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(CHOOSE_CITY_TEXT,
+                        child: Text(LocaleKeys.chooseCity.tr(),
                             style: Theme.of(context).textTheme.headline6),
                       ),
                       Divider(),
@@ -206,7 +333,7 @@ class DialogHelper {
                                 groupValue: selectedRadio,
                                 value: _group[index].index,
                                 onChanged: (index) {
-                                  logger.d("select_radio set state");
+                                  _logger.d("select_radio set state");
                                   setState(() {
                                     selectedRadio = index;
                                   });
@@ -223,7 +350,7 @@ class DialogHelper {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             DialogButton(
-                              text: CANCEL_TEXT,
+                              text: LocaleKeys.cancel.tr(),
                               width: 120.0,
                               isPositive: false,
                               onPressed: () {
@@ -235,12 +362,12 @@ class DialogHelper {
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
                             DialogButton(
-                              text: OK_TEXT,
+                              text: LocaleKeys.ok.tr(),
                               width: 120.0,
                               isPositive: true,
                               onPressed: () {
                                 if (_group[selectedRadio].text ==
-                                    ADD_NEW_CITY_TEXT) {
+                                    LocaleKeys.addNewCity.tr()) {
                                   Navigator.pop(context);
                                   addNewCity(parentContext);
                                 } else {
@@ -265,7 +392,7 @@ class DialogHelper {
   }
 
   static addNewCity(BuildContext parentContext) async {
-    logger.d("addNewCity");
+    _logger.d("addNewCity");
 
     await showDialog(
       context: parentContext,
@@ -292,7 +419,7 @@ class DialogHelper {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(ADD_NEW_CITY_TEXT,
+                        child: Text(LocaleKeys.addNewCity.tr(),
                             style: Theme.of(context).textTheme.headline6),
                       ),
                       Divider(),
@@ -310,7 +437,7 @@ class DialogHelper {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             DialogButton(
-                              text: CANCEL_TEXT,
+                              text: LocaleKeys.cancel.tr(),
                               width: 120.0,
                               isPositive: false,
                               onPressed: () {
@@ -322,7 +449,7 @@ class DialogHelper {
                                   const EdgeInsets.symmetric(horizontal: 4.0),
                             ),
                             DialogButton(
-                              text: OK_TEXT,
+                              text: LocaleKeys.ok.tr(),
                               width: 120.0,
                               isPositive: true,
                               onPressed: () {
@@ -340,6 +467,94 @@ class DialogHelper {
                 ),
               );
             },
+          ),
+        );
+      },
+    );
+  }
+
+  static addNewShare(BuildContext parentContext) {
+    _logger.d("addNewCity");
+
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        var screenWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: screenWidth > MAX_SCREEN_WIDTH
+                  ? MAX_DIALOG_WIDTH
+                  : screenWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(LocaleKeys.add.tr(),
+                        style: Theme.of(context).textTheme.headline6),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(LocaleKeys.beenSaved.tr(),
+                        style: Theme.of(context).textTheme.subtitle1),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        DialogButton(
+                          text: LocaleKeys.cancel.tr(),
+                          width: 100.0,
+                          isPositive: false,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DialogButton(
+                              text: LocaleKeys.no.tr(),
+                              width: 60.0,
+                              isPositive: false,
+                              onPressed: () {
+                                parentContext
+                                    .read<AddShareBloc>()
+                                    .add(AddShareEvent(false));
+                                Navigator.pop(context);
+                              },
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            DialogButton(
+                              text: LocaleKeys.yes.tr(),
+                              width: 60.0,
+                              isPositive: true,
+                              onPressed: () {
+                                parentContext
+                                    .read<AddShareBloc>()
+                                    .add(AddShareEvent(true));
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },

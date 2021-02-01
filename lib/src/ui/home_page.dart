@@ -1,14 +1,18 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_event.dart';
+import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
 import 'package:logger/logger.dart';
+import 'package:sharegospel/generated/locale_keys.g.dart';
 
 class DrawerItem {
   String title;
@@ -29,18 +33,18 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _activePage = 0;
   ConnectivityResult connectionResult;
   var _subscription;
-  var logger = Logger();
+  var _logger = Logger();
 
-  final _navigationItems = [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: HOME_PAGE_TEXT,
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.mood),
-      label: GOSPEL_PAGE_TEXT,
-    )
-  ];
+  String _getPageTitle(int index) {
+    switch (index) {
+      case 0:
+        return LocaleKeys.homePage.tr();
+      case 1:
+        return LocaleKeys.gospelPage.tr();
+    }
+
+    return "";
+  }
 
   final List<Widget> _fragments = [
     HomePageFragment(),
@@ -50,13 +54,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    logger.d("initState");
+    _logger.d("initState");
     WidgetsBinding.instance.addObserver(this);
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
     _subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      logger.d("internet state changed state=" + result.toString());
+      _logger.d("internet state changed state=" + result.toString());
       setState(() {
         connectionResult = result;
       });
@@ -75,15 +79,25 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       connectionResult = await (Connectivity().checkConnectivity());
-      logger.d(
+      _logger.d(
           "didChangeAppLifecycleState resume " + connectionResult.toString());
       setState(() {});
+    }
+  }
+
+  void _handleClick(BuildContext context, String value) {
+    _logger.d("_handleClick");
+    switch (value) {
+      case CHANGE_LANGUAGE_KEY:
+        DialogHelper.chooseLanguage(context);
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
+    _logger.d("build");
 
     return Scaffold(
       appBar: AppBar(
@@ -91,19 +105,60 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             MediaQuery.of(context).platformBrightness == Brightness.dark
                 ? Colors.black26
                 : Colors.white,
-        title: Text(_navigationItems[_activePage].label),
+        title: Text(_getPageTitle(_activePage)),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (value) => _handleClick(context, value),
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: CHANGE_LANGUAGE_KEY,
+                  child: Text(LocaleKeys.changeLanguage.tr()),
+                )
+              ];
+            },
+          ),
+        ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: _navigationItems,
-        currentIndex: _activePage,
-        backgroundColor:
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? Colors.black26
-                : Colors.white,
-        onTap: (index) {
-          _pageViewController.animateToPage(index,
-              duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-        },
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: _activePage == 0
+          ? FloatingActionButton(
+              foregroundColor:
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white,
+              onPressed: () {
+                DialogHelper.addNewShare(context);
+              },
+              tooltip: LocaleKeys.add.tr(),
+              child: Icon(Icons.add),
+              elevation: 2.0,
+            )
+          : null,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        clipBehavior: Clip.antiAlias,
+        child: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: LocaleKeys.homePage.tr(),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mood),
+              label: LocaleKeys.gospelPage.tr(),
+            )
+          ],
+          currentIndex: _activePage,
+          backgroundColor:
+              MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Colors.black26
+                  : Colors.white,
+          onTap: (index) {
+            _pageViewController.animateToPage(index,
+                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+          },
+        ),
       ),
       body: connectionResult == ConnectivityResult.none
           ? Center(
@@ -116,7 +171,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     height: 150,
                   ),
                   Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
-                  Text(NO_INTERNET_TEXT,
+                  Text(LocaleKeys.noInternet.tr(),
                       style: Theme.of(context).textTheme.subtitle1)
                 ],
               ),
