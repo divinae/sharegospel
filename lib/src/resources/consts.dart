@@ -5,6 +5,9 @@ const String APP_TITLE = "ShareGospel";
 
 const String UUID_KEY = "uuid";
 
+const String ADD_SHARE_ANALYTICS_EVENT = "add_share";
+const String SAVED_KEY = "saved";
+
 const String CITIES_DEV_DB = "cities_dev";
 const String CITIES_DB = "cities";
 

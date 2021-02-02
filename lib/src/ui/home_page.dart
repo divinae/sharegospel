@@ -1,12 +1,17 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_event.dart';
+import 'package:sharegospel/src/ui/data/user_data.dart';
 import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'data/add_share_data.dart';
+import 'dialogs/analytics_helper.dart';
 import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
@@ -21,6 +26,10 @@ class DrawerItem {
 }
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key, this.analytics}) : super(key: key);
+
+  final FirebaseAnalytics analytics;
+
   @override
   State<StatefulWidget> createState() {
     return HomePageState();
@@ -32,6 +41,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _activePage = 0;
   ConnectivityResult connectionResult;
   var _subscription;
+  UserData _userData;
   var _logger = Logger();
 
   String _getPageTitle(int index) {
@@ -183,14 +193,33 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: BlocProvider(
                   create: (BuildContext context) =>
                       UserDataBloc()..add(InitUserDataEvent()),
-                  child: PageView(
-                    controller: _pageViewController,
-                    children: _fragments,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _activePage = index;
-                      });
-                    },
+                  child: MultiBlocListener(
+                    listeners: [
+                      BlocListener<UserDataBloc, UserData>(
+                        listener: (context, userData) {
+                          if (userData != null) {
+                            _userData = userData;
+                          }
+                        },
+                      ),
+                      BlocListener<AddShareBloc, AddShareData>(
+                        listener: (context, addShareData) {
+                          if (_userData != null) {
+                            AnalyticsHelper.sendAddShareEvent(widget.analytics,
+                                _userData, addShareData.saved);
+                          }
+                        },
+                      ),
+                    ],
+                    child: PageView(
+                      controller: _pageViewController,
+                      children: _fragments,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _activePage = index;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),

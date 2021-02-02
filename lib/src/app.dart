@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +9,6 @@ import 'ui/home_page.dart';
 
 class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +30,11 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
-      navigatorObservers: <NavigatorObserver>[observer],
       home: BlocProvider(
         create: (BuildContext context) => AddShareBloc(),
-        child: HomePage(),
+        child: HomePage(
+          analytics: analytics,
+        ),
       ),
     );
   }
