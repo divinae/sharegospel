@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
 import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/data/user_data.dart';
-import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
+import 'package:sharegospel/src/utils/dialogs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/consts.dart';
-import 'package:logger/logger.dart';
 import 'package:sharegospel/src/ui/widgets/count_widget.dart';
+import 'package:sharegospel/src/utils/logger.dart';
 
 class HomePageFragment extends StatefulWidget {
   HomePageFragment();
@@ -17,7 +17,6 @@ class HomePageFragment extends StatefulWidget {
 }
 
 class _HomePageFragmentState extends State<HomePageFragment> {
-  var _logger = Logger();
   var _stream;
   var _city;
 
@@ -25,11 +24,11 @@ class _HomePageFragmentState extends State<HomePageFragment> {
   Widget build(BuildContext context) {
     return BlocBuilder<UserDataBloc, UserData>(builder: (context, userData) {
       if (userData == null) {
-        _logger.d("user data is loading");
+        logger.d("user data is loading");
         return Center(child: CircularProgressIndicator());
       }
 
-      _logger.d("HomePageFragment uuid=${userData.uuid} city=${userData.city}");
+      logger.d("uuid=${userData.uuid} city=${userData.city}");
 
       if (userData.city == null) {
         DialogHelper.loadCity(context);
@@ -37,7 +36,7 @@ class _HomePageFragmentState extends State<HomePageFragment> {
 
       if (userData.uuid != null && userData.city != null) {
         if (userData.city != _city) {
-          _logger.d("build UI for new city");
+          logger.d("build UI for new city");
           _city = userData.city;
           _stream = FirebaseFirestore.instance
               .collection(getCitiesDB())

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/resources/utils.dart';
 import 'package:sharegospel/src/ui/data/add_share_data.dart';
-import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
+import 'package:sharegospel/src/utils/dialogs_helper.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
 import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
+import 'package:sharegospel/src/utils/logger.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
@@ -26,8 +26,6 @@ class CountWidget extends StatefulWidget {
 }
 
 class _CountWidgetState extends State<CountWidget> {
-  var _logger = Logger();
-
   final List<Widget> _imageSliders =
       HOME_IMAGES_URLS.map((imageUrl) => SliderWidget(imageUrl)).toList();
 
@@ -42,7 +40,7 @@ class _CountWidgetState extends State<CountWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _logger.d("CountWidget build $_isDeviceCountsInitialized");
+    logger.d("build count widget $_isDeviceCountsInitialized");
 
     if (!_isDeviceCountsInitialized) {
       _loadDeviceCounts();
@@ -113,7 +111,7 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   _getData(Iterable<DocumentSnapshot> documents) {
-    _logger.d("_getData for ${widget.city} docLength=${documents.length}");
+    logger.d("${widget.city} docLength=${documents.length}");
 
     if (!this.mounted) {
       return;
@@ -128,7 +126,7 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   _loadDeviceCounts() async {
-    _logger.d("_loadDeviceCounts");
+    logger.d("load device counts");
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
@@ -139,7 +137,7 @@ class _CountWidgetState extends State<CountWidget> {
   }
 
   _addShare(bool saved) async {
-    _logger.d("_addShare $saved");
+    logger.d("$saved");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(DEVICE_SHARES_COUNT_KEY, ++_deviceSharesCount);
@@ -154,9 +152,9 @@ class _CountWidgetState extends State<CountWidget> {
       SHARES_COUNT_KEY: _sharesCount + 1,
       SAVED_COUNT_KEY: saved ? _savedCount + 1 : _savedCount
     }).then((result) {
-      _logger.d('added');
+      logger.d('added');
     }).catchError((onError) {
-      _logger.e('error ${onError.toString()}');
+      logger.e('error ${onError.toString()}');
     });
   }
 }

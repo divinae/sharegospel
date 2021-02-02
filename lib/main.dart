@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sharegospel/src/utils/logger.dart';
 import 'generated/codegen_loader.g.dart';
 import 'src/app.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -28,7 +29,8 @@ void main() async {
       ),
     );
   }, (error, stackTrace) {
-    print('runZonedGuarded: Caught error in my root zone.');
+    logger.e(
+        "runZonedGuarded: Caught error in my root zone.", error, stackTrace);
     if (!kIsWeb) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }

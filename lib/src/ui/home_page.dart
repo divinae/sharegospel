@@ -8,14 +8,14 @@ import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
 import 'package:sharegospel/src/bloc/user_data_event.dart';
 import 'package:sharegospel/src/ui/data/user_data.dart';
-import 'package:sharegospel/src/ui/dialogs/dialogs_helper.dart';
+import 'package:sharegospel/src/utils/dialogs_helper.dart';
+import 'package:sharegospel/src/utils/logger.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'data/add_share_data.dart';
-import 'dialogs/analytics_helper.dart';
+import '../utils/analytics_helper.dart';
 import 'fragments/gospel_fragment.dart';
 import 'fragments/home_page_fragment.dart';
 import '../resources/consts.dart';
-import 'package:logger/logger.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
 
 class DrawerItem {
@@ -42,7 +42,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   ConnectivityResult connectionResult;
   var _subscription;
   UserData _userData;
-  var _logger = Logger();
 
   String _getPageTitle(int index) {
     switch (index) {
@@ -63,13 +62,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _logger.d("initState");
+    logger.d("initState");
     WidgetsBinding.instance.addObserver(this);
     Connectivity().checkConnectivity().then((val) => connectionResult = val);
     _subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      _logger.d("internet state changed state=" + result.toString());
+      logger.d("internet state changed state=" + result.toString());
       setState(() {
         connectionResult = result;
       });
@@ -88,14 +87,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       connectionResult = await (Connectivity().checkConnectivity());
-      _logger.d(
-          "didChangeAppLifecycleState resume " + connectionResult.toString());
+      logger.d(
+          "resume " + connectionResult.toString());
       setState(() {});
     }
   }
 
   void _handleClick(BuildContext context, String value) {
-    _logger.d("_handleClick");
+    logger.d(value);
     switch (value) {
       case CHANGE_LANGUAGE_KEY:
         DialogHelper.chooseLanguage(context);
@@ -106,7 +105,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    _logger.d("build");
+    logger.d("build home page");
 
     return Scaffold(
       appBar: AppBar(

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/bloc/add_share_event.dart';
 import 'package:sharegospel/src/bloc/user_data_bloc.dart';
@@ -12,12 +11,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sharegospel/src/ui/widgets/dialog_buttons.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
+import 'logger.dart';
 
 class DialogHelper {
-  static var _logger = Logger();
-
   static _setLanguage(BuildContext context, int index) {
-    _logger.d("setLanguage $index");
+    logger.d("setLanguage $index");
     switch (index) {
       case 0:
         EasyLocalization.of(context).locale = Locale('en');
@@ -35,7 +33,7 @@ class DialogHelper {
   }
 
   static chooseLanguage(BuildContext parentContext) async {
-    _logger.d("chooseLanguage");
+    logger.d("chooseLanguage");
 
     ScrollController scrollController = ScrollController();
     List<GroupModel> _group = [];
@@ -88,7 +86,7 @@ class DialogHelper {
                               groupValue: selectedRadio,
                               value: _group[index].index,
                               onChanged: (index) {
-                                _logger.d("select_radio set state");
+                                logger.d("select_radio set state");
                                 setState(
                                   () {
                                     selectedRadio = index;
@@ -141,7 +139,7 @@ class DialogHelper {
   }
 
   static loadCity(BuildContext parentContext) async {
-    _logger.d("loadCity");
+    logger.d("loadCity");
 
     ScrollController scrollController = ScrollController();
     List<GroupModel> _group = [];
@@ -216,7 +214,7 @@ class DialogHelper {
                                   groupValue: selectedRadio,
                                   value: _group[index].index,
                                   onChanged: (index) {
-                                    _logger.d("select_radio set state");
+                                    logger.d("select_radio set state");
                                     setState(
                                       () {
                                         selectedRadio = index;
@@ -261,7 +259,7 @@ class DialogHelper {
   }
 
   static changeCity(BuildContext parentContext) async {
-    _logger.d("changeCity");
+    logger.d("changeCity");
 
     ScrollController scrollController = ScrollController();
     List<GroupModel> _group = [];
@@ -333,7 +331,7 @@ class DialogHelper {
                                 groupValue: selectedRadio,
                                 value: _group[index].index,
                                 onChanged: (index) {
-                                  _logger.d("select_radio set state");
+                                  logger.d("select_radio set state");
                                   setState(() {
                                     selectedRadio = index;
                                   });
@@ -392,7 +390,7 @@ class DialogHelper {
   }
 
   static addNewCity(BuildContext parentContext) async {
-    _logger.d("addNewCity");
+    logger.d("addNewCity");
 
     await showDialog(
       context: parentContext,
@@ -474,7 +472,7 @@ class DialogHelper {
   }
 
   static addNewShare(BuildContext parentContext) {
-    _logger.d("addNewCity");
+    logger.d("addNewCity");
 
     showDialog(
       context: parentContext,
