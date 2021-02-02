@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sharegospel/src/resources/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
+import 'package:sharegospel/src/ui/widgets/flexible_text.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class SharesCard extends StatelessWidget {
@@ -26,7 +27,7 @@ class SharesCard extends StatelessWidget {
       child: Container(
         height: 140,
         child: Container(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -37,8 +38,7 @@ class SharesCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Container(
-                    width: 230,
+                  Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,14 +49,14 @@ class SharesCard extends StatelessWidget {
                             Text("${LocaleKeys.gospelHeard.tr()} ",
                                 style: Theme.of(context).textTheme.subtitle1),
                             Text(
-                              "${sharesCount.toString()}",
+                              "${sharesCount.toString()} ",
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              " ${getPeoplePostfix(sharesCount)}",
+                            FlexibleText(
+                              text: getPeoplePostfix(sharesCount),
                               style: Theme.of(context).textTheme.subtitle1,
                             ),
                           ],
@@ -67,12 +67,13 @@ class SharesCard extends StatelessWidget {
                           children: [
                             Text("${LocaleKeys.inviteJesus.tr()} ",
                                 style: Theme.of(context).textTheme.subtitle1),
-                            Text("${savedCount.toString()}",
+                            Text("${savedCount.toString()} ",
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1
                                     .copyWith(fontWeight: FontWeight.bold)),
-                            Text(" ${getPeoplePostfix(savedCount)}",
+                            FlexibleText(
+                                text: getPeoplePostfix(savedCount),
                                 style: Theme.of(context).textTheme.subtitle1),
                           ],
                         ),
@@ -82,7 +83,7 @@ class SharesCard extends StatelessWidget {
                   FadeInImage(
                     placeholder: MemoryImage(kTransparentImage),
                     image: AssetImage(imagePath),
-                    height: 80,
+                    height: 70,
                   )
                 ],
               ),
