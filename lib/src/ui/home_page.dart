@@ -152,7 +152,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           currentIndex: _activePage,
           backgroundColor:
               MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Colors.black26
+                  ? Colors.black45
                   : Colors.white,
           onTap: (index) {
             _pageViewController.animateToPage(index,

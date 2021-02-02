@@ -42,6 +42,8 @@ class YoutubeCard extends StatelessWidget {
                               PlayPauseOverlay(controller: controller),
                               VideoProgressIndicator(
                                 controller,
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                 allowScrubbing: true,
                               ),
                             ],
