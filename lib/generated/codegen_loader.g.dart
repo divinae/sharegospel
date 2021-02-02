@@ -41,7 +41,7 @@ class CodegenLoader extends AssetLoader{
   "personsSec": "persons",
   "howToShare": "How to share gospel?",
   "howToShareLink": "https://www.youtube.com/watch?v=CpqwmhXogTk",
-  "gospelImagePath": "assets/ewangelia.png",
+  "gospelImagePath": "assets/gospel_en.png",
   "gospelText": "text"
 };
 static const Map<String,dynamic> pl = {
@@ -71,7 +71,7 @@ static const Map<String,dynamic> pl = {
   "personsSec": "osoby",
   "howToShare": "Jak dzielić się ewangelią?",
   "howToShareLink": "https://www.youtube.com/watch?v=DakbXbI-hY0",
-  "gospelImagePath": "assets/ewangelia.png",
+  "gospelImagePath": "assets/gospel_pl.png",
   "gospelText": "   Bóg stworzył nas, abyśmy mieli z Nim wieczną relację. Jednak w swoim życiu decydujemy, przeciwstawić się Mu. Odwracamy się od Niego, co przez Biblię nazwane jest grzechem. W innym miejscu Biblia mówi, że zapłatą za grzech jest śmierć (Rz 6:23).\n   W ten sposób wstępujemy na drogę, której końcem jest wieczne potępienie. Robiąc dobre uczynki czy wykonując religijne obrzędy, próbujemy się usprawiedliwiać. Pomijając Boga, szukamy szczęścia w rzeczach materialnych czy sukcesie. Lecz własnymi siłami nie możemy pokonać przepaści oddzielającej nas od Stwórcy.\n   Na szczęście Bóg znalazł rozwiązanie. Zesłał na świat swojego syna Jezusa Chrystusa (J 3:16). On, pomimo swojej boskiej natury, stał się człowiekiem. Żył bezgrzesznym życiem i został zabity na krzyżu, składając ofiarę za grzechy wszystkich ludzi (Iz 53:4-7). Bóg wskrzesił go i postawił po swojej prawicy, dając Mu wszelką władzę na ziemi i niebie.\n   W tym momencie stoimy przed wyborem. Możemy wciąż pokładać nadzieję we własnych siłach lub uwierzyć i przyjąć ofiarę Jezusa. Biblia mówi o tym, że kto ustami wyzna Jezusa Panem i uwierzy w swoim sercu, że Bóg wskrzesił go z martwych, będzie zbawiony (Rzym 10:9).\n   A Ty, w czym pokładasz swoją nadzieję?"
 };
 static const Map<String,dynamic> ru = {
@@ -101,7 +101,7 @@ static const Map<String,dynamic> ru = {
   "personsSec": "человек",
   "howToShare": "Как делиться Евангелием?",
   "howToShareLink": "https://www.youtube.com/watch?v=0aQlAWrs-0c",
-  "gospelImagePath": "assets/ewangelia.png",
+  "gospelImagePath": "assets/gospel_ru.png",
   "gospelText": "текст"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "pl": pl, "ru": ru};
