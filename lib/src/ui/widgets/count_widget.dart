@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharegospel/src/bloc/add_share_bloc.dart';
-import 'package:sharegospel/src/resources/utils.dart';
+import 'package:sharegospel/src/resources/firestore_helper.dart';
 import 'package:sharegospel/src/ui/data/add_share_data.dart';
 import 'package:sharegospel/src/utils/dialogs_helper.dart';
 import 'package:sharegospel/src/ui/widgets/shares_card.dart';
@@ -145,16 +145,6 @@ class _CountWidgetState extends State<CountWidget> {
       await prefs.setInt(DEVICE_SAVED_COUNT_KEY, ++_deviceSavedCount);
     }
 
-    FirebaseFirestore.instance
-        .collection(getCitiesDB())
-        .doc(_documentUuid)
-        .update({
-      SHARES_COUNT_KEY: _sharesCount + 1,
-      SAVED_COUNT_KEY: saved ? _savedCount + 1 : _savedCount
-    }).then((result) {
-      logger.d('added');
-    }).catchError((onError) {
-      logger.e('error ${onError.toString()}');
-    });
+    FirestoreHelper.incrementShareCounter(saved, _documentUuid);
   }
 }
