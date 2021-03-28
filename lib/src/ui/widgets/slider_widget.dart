@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class SliderWidget extends StatelessWidget {
-  const SliderWidget(this.imageUrl);
+  const SliderWidget(this.imagePath);
 
-  final String imageUrl;
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +16,11 @@ class SliderWidget extends StatelessWidget {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          child: CachedNetworkImage(
+          child: FadeInImage(
             width: 1000,
             fit: BoxFit.cover,
-            imageUrl: imageUrl,
-            placeholder: (context, url) =>
-                Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: MemoryImage(kTransparentImage),
+            image: AssetImage(imagePath),
           ),
         ),
       ),

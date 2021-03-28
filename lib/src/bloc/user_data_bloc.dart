@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 import 'package:sharegospel/src/bloc/user_data_event.dart';
 import 'package:sharegospel/src/resources/consts.dart';
 import 'package:sharegospel/src/resources/utils.dart';
@@ -19,14 +19,14 @@ class UserDataBloc extends Bloc<UserDataEvent, UserData> {
   Stream<UserData> mapEventToState(UserDataEvent event) async* {
     if (event is InitUserDataEvent) {
       logger.d("InitUserDataEvent");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String city = (prefs.getString(CITY_NAME_KEY) ?? null);
-      String uuid = (prefs.getString(UUID_KEY) ?? null);
+      Box box = Hive.box(USER_DATA_BOX_KEY);
+      String city = (box.get(CITY_NAME_KEY) ?? null);
+      String uuid = (box.get(UUID_KEY) ?? null);
 
       if (uuid == null) {
         logger.d("create new uuid");
         uuid = Uuid().v1();
-        await prefs.setString(UUID_KEY, uuid);
+        box.put(UUID_KEY, uuid);
       }
 
       logger.d("uuid=$uuid, city=$city");
@@ -40,8 +40,8 @@ class UserDataBloc extends Bloc<UserDataEvent, UserData> {
         return;
       }
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString(CITY_NAME_KEY, event.data);
+      Box box = Hive.box(USER_DATA_BOX_KEY);
+      box.put(CITY_NAME_KEY, event.data);
       _city = event.data;
 
       yield UserData(city: _city, uuid: _uuid);
@@ -49,7 +49,7 @@ class UserDataBloc extends Bloc<UserDataEvent, UserData> {
       var city = event.data;
       logger.d("CreateCityEvent $city");
 
-      DocumentSnapshot document = await FirebaseFirestore.instance
+      DocumentSnapshot<Map<String, dynamic>> document = await FirebaseFirestore.instance
           .collection(getCitiesDB())
           .doc(city.toLowerCase())
           .get();
@@ -67,10 +67,8 @@ class UserDataBloc extends Bloc<UserDataEvent, UserData> {
   _createCityDoc(String city) {
     logger.d('_createCityDoc $city');
 
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = Map<String, dynamic>();
     data[CITY_NAME_KEY] = city;
-    data[SHARES_COUNT_KEY] = 0;
-    data[SAVED_COUNT_KEY] = 0;
 
     FirebaseFirestore.instance
         .collection(getCitiesDB())

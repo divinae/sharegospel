@@ -13,7 +13,7 @@ class AnalyticsHelper {
       parameters: <String, dynamic>{
         UUID_KEY: userData.uuid,
         CITY_NAME_KEY: userData.city,
-        SAVED_KEY: saved,
+        SAVED_ANALYTICS_KEY: saved,
       },
     );
   }
