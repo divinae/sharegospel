@@ -1,6 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -87,8 +88,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       connectionResult = await (Connectivity().checkConnectivity());
-      logger.d(
-          "resume " + connectionResult.toString());
+      logger.d("resume " + connectionResult.toString());
       setState(() {});
     }
   }
@@ -104,7 +104,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
+    var _screenWidth = MediaQuery.of(context).size.width;
     logger.d("build home page");
 
     return Scaffold(
@@ -186,9 +186,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             )
           : Center(
               child: Container(
-                width: screenWidth > MAX_SCREEN_WIDTH
-                    ? MAX_SCREEN_WIDTH
-                    : screenWidth,
+                width: kIsWeb
+                    ? _screenWidth > MAX_SCREEN_WIDTH
+                        ? MAX_SCREEN_WIDTH
+                        : _screenWidth
+                    : _screenWidth,
                 child: BlocProvider(
                   create: (BuildContext context) =>
                       UserDataBloc()..add(InitUserDataEvent()),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/bloc/add_share_event.dart';
@@ -18,16 +19,16 @@ class DialogHelper {
     logger.d("setLanguage $index");
     switch (index) {
       case 0:
-        EasyLocalization.of(context).locale = Locale('en');
+        EasyLocalization.of(context).setLocale(Locale('en'));
         break;
       case 1:
-        EasyLocalization.of(context).locale = Locale('pl');
+        EasyLocalization.of(context).setLocale(Locale('pl'));
         break;
       case 2:
-        EasyLocalization.of(context).locale = Locale('ru');
+        EasyLocalization.of(context).setLocale(Locale('ru'));
         break;
       default:
-        EasyLocalization.of(context).locale = Locale('en');
+        EasyLocalization.of(context).setLocale(Locale('en'));
         break;
     }
   }
@@ -49,7 +50,7 @@ class DialogHelper {
       context: parentContext,
       builder: (BuildContext context) {
         int selectedRadio;
-        var screenWidth = MediaQuery.of(context).size.width;
+        var _screenWidth = MediaQuery.of(context).size.width;
 
         return Dialog(
           shape:
@@ -60,9 +61,11 @@ class DialogHelper {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: 300,
-                  width: screenWidth > MAX_SCREEN_WIDTH
-                      ? MAX_DIALOG_WIDTH
-                      : screenWidth,
+                  width: kIsWeb
+                      ? _screenWidth > MAX_SCREEN_WIDTH
+                          ? MAX_DIALOG_WIDTH
+                          : _screenWidth
+                      : _screenWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,7 +151,7 @@ class DialogHelper {
     await FirebaseFirestore.instance
         .collection(getCitiesDB())
         .get()
-        .then((QuerySnapshot snapshot) {
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       var documents = snapshot.docs;
       documents.sort((a, b) => a
           .data()[CITY_NAME_KEY]
@@ -171,7 +174,7 @@ class DialogHelper {
       barrierDismissible: false,
       builder: (BuildContext context) {
         int selectedRadio = 0;
-        var screenWidth = MediaQuery.of(context).size.width;
+        var _screenWidth = MediaQuery.of(context).size.width;
 
         return WillPopScope(
           onWillPop: () async => false,
@@ -184,9 +187,11 @@ class DialogHelper {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     height: 400,
-                    width: screenWidth > MAX_SCREEN_WIDTH
-                        ? MAX_DIALOG_WIDTH
-                        : screenWidth,
+                    width: kIsWeb
+                        ? _screenWidth > MAX_SCREEN_WIDTH
+                            ? MAX_DIALOG_WIDTH
+                            : _screenWidth
+                        : _screenWidth,
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,13 +241,13 @@ class DialogHelper {
                             onPressed: () {
                               if (_group[selectedRadio].text ==
                                   LocaleKeys.addNewCity.tr()) {
+                                Navigator.pop(context);
                                 addNewCity(parentContext);
                               } else {
                                 parentContext.read<UserDataBloc>().add(
                                     SetCityEvent(_group[selectedRadio].text));
+                                Navigator.pop(context);
                               }
-
-                              Navigator.pop(context);
                             },
                           ),
                         ),
@@ -268,7 +273,7 @@ class DialogHelper {
     await FirebaseFirestore.instance
         .collection(getCitiesDB())
         .get()
-        .then((QuerySnapshot snapshot) {
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       var documents = snapshot.docs;
       documents.sort((a, b) => a
           .data()[CITY_NAME_KEY]
@@ -290,7 +295,7 @@ class DialogHelper {
       context: parentContext,
       builder: (BuildContext context) {
         int selectedRadio;
-        var screenWidth = MediaQuery.of(context).size.width;
+        var _screenWidth = MediaQuery.of(context).size.width;
 
         return Dialog(
           shape:
@@ -301,9 +306,11 @@ class DialogHelper {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: 400,
-                  width: screenWidth > MAX_SCREEN_WIDTH
-                      ? MAX_DIALOG_WIDTH
-                      : screenWidth,
+                  width: kIsWeb
+                      ? _screenWidth > MAX_SCREEN_WIDTH
+                          ? MAX_DIALOG_WIDTH
+                          : _screenWidth
+                      : _screenWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -397,7 +404,7 @@ class DialogHelper {
       barrierDismissible: false,
       builder: (BuildContext context) {
         final controller = TextEditingController();
-        var screenWidth = MediaQuery.of(context).size.width;
+        var _screenWidth = MediaQuery.of(context).size.width;
 
         return Dialog(
           shape:
@@ -407,9 +414,11 @@ class DialogHelper {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  width: screenWidth > MAX_SCREEN_WIDTH
-                      ? MAX_DIALOG_WIDTH
-                      : screenWidth,
+                  width: kIsWeb
+                      ? _screenWidth > MAX_SCREEN_WIDTH
+                          ? MAX_DIALOG_WIDTH
+                          : _screenWidth
+                      : _screenWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -477,7 +486,7 @@ class DialogHelper {
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
-        var screenWidth = MediaQuery.of(context).size.width;
+        var _screenWidth = MediaQuery.of(context).size.width;
 
         return Dialog(
           shape:
@@ -485,9 +494,11 @@ class DialogHelper {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              width: screenWidth > MAX_SCREEN_WIDTH
-                  ? MAX_DIALOG_WIDTH
-                  : screenWidth,
+              width: kIsWeb
+                  ? _screenWidth > MAX_SCREEN_WIDTH
+                      ? MAX_DIALOG_WIDTH
+                      : _screenWidth
+                  : _screenWidth,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

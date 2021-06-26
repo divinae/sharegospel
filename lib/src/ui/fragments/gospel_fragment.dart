@@ -1,4 +1,4 @@
-import 'package:ext_video_player/ext_video_player.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -6,6 +6,7 @@ import 'package:sharegospel/src/ui/video_player/youtube_card.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class GospelFragment extends StatefulWidget {
   const GospelFragment();
@@ -15,27 +16,35 @@ class GospelFragment extends StatefulWidget {
 }
 
 class _GospelFragmentState extends State<GospelFragment> {
-  VideoPlayerController _controller;
+  YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.network(LocaleKeys.howToShareLink.tr());
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.initialize();
+    _controller = YoutubePlayerController(
+      initialVideoId: LocaleKeys.howToShareLink.tr(),
+      params: const YoutubePlayerParams(
+        autoPlay: false,
+        enableCaption: false,
+        showControls: true,
+        showFullscreenButton: kIsWeb ? false : true,
+        privacyEnhanced: true,
+        useHybridComposition: false,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _controller.cue(LocaleKeys.howToShareLink.tr());
+
     return ListView(
       padding: EdgeInsets.all(8.0),
       children: <Widget>[

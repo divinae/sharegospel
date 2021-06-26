@@ -2,22 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 import 'package:sharegospel/src/bloc/add_share_bloc.dart';
 import 'package:sharegospel/src/resources/firestore_helper.dart';
 import 'package:sharegospel/src/ui/data/add_share_data.dart';
+import 'package:sharegospel/src/ui/data/personal_shares.dart';
 import 'package:sharegospel/src/utils/dialogs_helper.dart';
-import 'package:sharegospel/src/ui/widgets/shares_card.dart';
-import 'package:sharegospel/src/ui/widgets/shares_city_card.dart';
+import 'package:sharegospel/src/ui/widgets/personal_shares_card.dart';
+import 'package:sharegospel/src/ui/widgets/city_shares_card.dart';
 import 'package:sharegospel/src/ui/widgets/slider_widget.dart';
 import 'package:sharegospel/src/utils/logger.dart';
 import '../../resources/consts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sharegospel/generated/locale_keys.g.dart';
 
+import '../city_stats_page.dart';
+import '../personal_stats_page.dart';
+
 class CountWidget extends StatefulWidget {
   final String city;
-  final Stream<QuerySnapshot> stream;
+  final Stream<DocumentSnapshot> stream;
 
   const CountWidget(this.city, this.stream);
 
@@ -26,26 +30,27 @@ class CountWidget extends StatefulWidget {
 }
 
 class _CountWidgetState extends State<CountWidget> {
-  final List<Widget> _imageSliders =
-      HOME_IMAGES_URLS.map((imageUrl) => SliderWidget(imageUrl)).toList();
-
-  var _documentUuid;
+  final List<Widget> _imageSliders = HOME_SLIDER_IMAGES_PATHS
+      .map((imagePath) => SliderWidget(imagePath))
+      .toList();
 
   var _sharesCount = 0;
   var _savedCount = 0;
+  var _shares;
 
   var _isDeviceCountsInitialized = false;
   var _deviceSharesCount = 0;
   var _deviceSavedCount = 0;
 
+  var box = Hive.box<PersonalShares>(SHARES_BOX_KEY);
+
   @override
   Widget build(BuildContext context) {
-    logger.d("build count widget $_isDeviceCountsInitialized");
-
     if (!_isDeviceCountsInitialized) {
       _loadDeviceCounts();
-      return Center(child: CircularProgressIndicator());
     }
+
+    logger.d("CountWidget build ${widget.stream}");
 
     return BlocListener<AddShareBloc, AddShareData>(
       listener: (context, addShareData) {
@@ -53,55 +58,69 @@ class _CountWidgetState extends State<CountWidget> {
       },
       child: StreamBuilder(
         stream: widget.stream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          logger.d("CountWidget stream builder hasData=${snapshot.hasData}");
+
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
 
-          _getData(snapshot.data.docs);
+          logger.d(
+              "CountWidget stream builder data.exists=${snapshot.data.exists}");
+
+          _getData(snapshot.data);
 
           return Stack(
             children: [
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          CarouselSlider(
-                            options: CarouselOptions(
-                              aspectRatio: 1.8,
-                              viewportFraction: 1.0,
-                              enlargeCenterPage: true,
-                              scrollDirection: Axis.horizontal,
-                              autoPlay: true,
-                            ),
-                            items: _imageSliders,
-                          ),
-                          SharesCard(
-                              title: LocaleKeys.yourCount,
-                              imagePath: PERSON_ASSET_PATH,
-                              sharesCount: _deviceSharesCount,
-                              savedCount: _deviceSavedCount),
-                          SharesCityCard(
-                            title: LocaleKeys.cityCount,
-                            imagePath: CITY_ASSET_PATH,
-                            sharesCount: _sharesCount,
-                            cityName: widget.city,
-                            savedCount: _savedCount,
-                            changeCity: DialogHelper.changeCity,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 50),
-                          )
-                        ],
-                      ),
-                    ],
+              ListView(
+                padding: const EdgeInsets.all(8.0),
+                children: <Widget>[
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      aspectRatio: 1.8,
+                      viewportFraction: 1.0,
+                      enlargeCenterPage: true,
+                      scrollDirection: Axis.horizontal,
+                      autoPlay: true,
+                    ),
+                    items: _imageSliders,
                   ),
-                ),
+                  PersonalSharesCard(
+                      title: LocaleKeys.yourCount,
+                      imagePath: PERSON_ASSET_PATH,
+                      sharesCount: _deviceSharesCount,
+                      savedCount: _deviceSavedCount,
+                      showMore: () => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PersonalStatsPage(
+                                      personalShares: box.toMap())),
+                            )
+                          }),
+                  CitySharesCard(
+                    title: LocaleKeys.cityCount,
+                    imagePath: CITY_ASSET_PATH,
+                    sharesCount: _sharesCount,
+                    cityName: widget.city,
+                    savedCount: _savedCount,
+                    changeCity: DialogHelper.changeCity,
+                    showMore: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CityStatsPage(
+                                  shares: _shares,
+                                  city: widget.city,
+                                )),
+                      )
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 50),
+                  )
+                ],
               ),
             ],
           );
@@ -110,41 +129,59 @@ class _CountWidgetState extends State<CountWidget> {
     );
   }
 
-  _getData(Iterable<DocumentSnapshot> documents) {
-    logger.d("${widget.city} docLength=${documents.length}");
+  _getData(DocumentSnapshot document) {
+    logger.d("${widget.city} ${document.exists}");
 
     if (!this.mounted) {
       return;
     }
 
-    if (documents.length > 0) {
-      var item = documents.first;
-      _documentUuid = item.id;
-      _sharesCount = item.data()[SHARES_COUNT_KEY] as int;
-      _savedCount = item.data()[SAVED_COUNT_KEY] as int;
+    if (document.exists) {
+      _shares = document.data();
+      _sharesCount =
+          document["${DateTime.now().month}." + SHARES_COUNT_KEY] as int;
+      _savedCount =
+          document["${DateTime.now().month}." + SAVED_COUNT_KEY] as int;
+    } else {
+      FirestoreHelper.createShareDoc(widget.city.toLowerCase());
     }
   }
 
-  _loadDeviceCounts() async {
+  _loadDeviceCounts() {
     logger.d("load device counts");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var personalShares = box.get(DateTime.now().year.toString());
 
-    setState(() {
-      _deviceSharesCount = (prefs.getInt(DEVICE_SHARES_COUNT_KEY) ?? 0);
-      _deviceSavedCount = (prefs.getInt(DEVICE_SAVED_COUNT_KEY) ?? 0);
-      _isDeviceCountsInitialized = true;
-    });
-  }
+    if (personalShares != null) {
+      logger.d(
+          "load device counts ${personalShares.shares} ${personalShares.saved}");
 
-  _addShare(bool saved) async {
-    logger.d("$saved");
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(DEVICE_SHARES_COUNT_KEY, ++_deviceSharesCount);
-    if (saved) {
-      await prefs.setInt(DEVICE_SAVED_COUNT_KEY, ++_deviceSavedCount);
+      _deviceSharesCount =
+          personalShares.shares[DateTime.now().month.toString()];
+      _deviceSavedCount = personalShares.saved[DateTime.now().month.toString()];
+    } else {
+      personalShares = PersonalShares();
+      personalShares.shares = Map.from(EMPTY_PERSONAL_SHARES_MAP);
+      personalShares.saved = Map.from(EMPTY_PERSONAL_SHARES_MAP);
+      box.put(DateTime.now().year.toString(), personalShares);
     }
 
-    FirestoreHelper.incrementShareCounter(saved, _documentUuid);
+    logger.d("load device counts $_deviceSharesCount $_deviceSavedCount");
+
+    _isDeviceCountsInitialized = true;
+  }
+
+  _addShare(bool saved) {
+    logger.d("$saved");
+    var personalShares = box.get(DateTime.now().year.toString());
+
+    personalShares.shares[DateTime.now().month.toString()] =
+        ++_deviceSharesCount;
+    if (saved) {
+      personalShares.saved[DateTime.now().month.toString()] =
+          ++_deviceSavedCount;
+    }
+    personalShares.save();
+
+    FirestoreHelper.incrementShareCounter(saved, widget.city.toLowerCase());
   }
 }

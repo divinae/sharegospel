@@ -40,7 +40,9 @@ class _HomePageFragmentState extends State<HomePageFragment> {
           _city = userData.city;
           _stream = FirebaseFirestore.instance
               .collection(getCitiesDB())
-              .where(DOCUMENT_ID_KEY, isEqualTo: userData.city.toLowerCase())
+              .doc(userData.city.toLowerCase())
+              .collection(CITY_STATS_KEY)
+              .doc(DateTime.now().year.toString())
               .snapshots();
         }
 
