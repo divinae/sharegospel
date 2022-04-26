@@ -8,7 +8,7 @@ import 'bloc/add_share_bloc.dart';
 import 'ui/home_page.dart';
 
 class MyApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   Widget build(BuildContext context) {
